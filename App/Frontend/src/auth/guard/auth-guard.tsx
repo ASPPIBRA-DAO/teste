@@ -49,9 +49,10 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
       // Segurança: Se o método no config não existir no signInPaths (erro de config),
       // fallback para JWT padrão para evitar crash.
-      // @ts-expect-error A propriedade `method` pode ser qualquer string.
+      // ✅ CORREÇÃO: Removido o @ts-expect-error pois o TypeScript já valida corretamente
+      // que 'method' bate com as chaves de 'signInPaths'.
       const signInPath = signInPaths[method] || paths.auth.jwt.signIn;
-      
+
       const redirectPath = createRedirectPath(signInPath);
 
       router.replace(redirectPath);

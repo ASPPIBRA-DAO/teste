@@ -1,13 +1,15 @@
 'use client';
 
+import type { AuthState } from '../../types';
+
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/lib/axios';
 
 import { AuthContext } from '../auth-context';
+// ✅ CORREÇÃO: Removemos a linha em branco que existia aqui
 import { setSession, isValidToken } from './utils';
-import type { AuthState } from '../../types';
 
 // ----------------------------------------------------------------------
 
@@ -52,7 +54,7 @@ export function AuthProvider({ children }: Props) {
   }, []);
 
   // ----------------------------------------------------------------------
-  // 2. Login (Tipagem Adicionada: string)
+  // 2. Login
   // ----------------------------------------------------------------------
   const login = useCallback(async (email: string, password: string) => {
     const res = await axios.post(endpoints.auth.signIn, {
@@ -68,7 +70,7 @@ export function AuthProvider({ children }: Props) {
   }, [setState]);
 
   // ----------------------------------------------------------------------
-  // 3. Register (Tipagem Adicionada: string)
+  // 3. Register
   // ----------------------------------------------------------------------
   const register = useCallback(async (email: string, password: string, firstName: string, lastName: string) => {
     const res = await axios.post(endpoints.auth.signUp, {

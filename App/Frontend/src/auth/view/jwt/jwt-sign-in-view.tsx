@@ -14,8 +14,9 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
-import { useRouter, useSearchParams } from 'src/routes/hooks';
+// ✅ CORREÇÃO DE ORDEM (Components vem antes de Hooks)
 import { RouterLink } from 'src/routes/components';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
 import { Form, Field, schemaUtils } from 'src/components/hook-form';
@@ -23,9 +24,6 @@ import { Form, Field, schemaUtils } from 'src/components/hook-form';
 import { useAuthContext } from '../../hooks';
 import { getErrorMessage } from '../../utils';
 import { FormHead } from '../../components/form-head';
-
-// ❌ REMOVIDO: Não usamos mais a função solta, usamos a do contexto
-// import { signInWithPassword } from '../../context/jwt';
 
 // ----------------------------------------------------------------------
 
@@ -49,7 +47,7 @@ export function JwtSignInView() {
 
   const showPassword = useBoolean();
 
-  // ✅ CORREÇÃO: Pegamos a função 'login' que atualiza o estado global
+  // Função login do AuthContext que atualiza o estado global
   const { login } = useAuthContext();
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -71,12 +69,11 @@ export function JwtSignInView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // ✅ 1. Usa a função do Provider (que salva token E atualiza estado React)
+      // 1. Usa a função do Provider (que salva token E atualiza estado React)
       await login(data.email, data.password);
 
-      // 2. Redireciona para Dashboard
+      // 2. Redireciona para Dashboard (ou página de retorno)
       router.push(returnTo || paths.dashboard.root);
-
     } catch (error) {
       console.error(error);
       const feedbackMessage = getErrorMessage(error);

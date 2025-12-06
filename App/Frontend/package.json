@@ -114,6 +114,7 @@
     "@types/node": "^24.5.2",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^19.1.15",
+    "@types/react-dom": "^19.2.3",
     "@types/stylis": "^4.2.7",
     "@types/turndown": "^5.0.5",
     "@typescript-eslint/parser": "^8.44.1",

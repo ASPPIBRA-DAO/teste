@@ -1,4 +1,3 @@
-/* eslint-disable perfectionist/sort-imports */
 import axios, {
   type AxiosRequestConfig,
   type InternalAxiosRequestConfig,
@@ -81,42 +80,60 @@ export const fetcher = async <T = unknown>(
 };
 
 // ----------------------------------------------------------------------
-// ✅ Endpoints centralizados — incluindo CHAT
+// ✅ Endpoints centralizados
 // ----------------------------------------------------------------------
 
 export const endpoints = {
+  // Rotas corrigidas para o seu Backend (Hono)
   auth: {
     me: '/auth/me',
     signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
   },
 
+  // Rotas customizadas do seu projeto
   proposals: {
     list: '/proposals/list',
     details: '/proposals/details',
     vote: '/proposals/vote',
   },
 
-  post: {
-    list: '/post/list',
-    details: '/post/details',
-    latest: '/post/latest',
-    search: '/post/search',
-  },
+  // --- RESTAURADOS DO MODELO OFICIAL (Híbrido) ---
 
+  // 🔧 CORREÇÃO: Kanban deve ser STRING nesta versão do template
+  kanban: '/api/kanban',
+
+  // 🔧 CORREÇÃO: Calendar deve ser OBJETO
   calendar: {
-    list: '/calendar/list',
-    create: '/calendar/create',
-    update: '/calendar/update',
-    delete: '/calendar/delete',
+    list: '/api/calendar/list',
+    details: '/api/calendar/details',
+    create: '/api/calendar/create',
+    update: '/api/calendar/update',
+    delete: '/api/calendar/delete',
   },
 
-  // -----------------------------------------------------
-  // ✅ CHAT — Endpoints adicionados conforme sua API
-  // -----------------------------------------------------
+  mail: {
+    list: '/api/mail/list',
+    details: '/api/mail/details',
+    labels: '/api/mail/labels',
+  },
+
+  post: {
+    list: '/api/post/list',
+    details: '/api/post/details',
+    latest: '/api/post/latest',
+    search: '/api/post/search',
+  },
+
+  product: {
+    list: '/api/product/list',
+    details: '/api/product/details',
+    search: '/api/product/search',
+  },
+
   chat: {
-    root: '/chat',                 // GET → lista de conversas do usuário
-    participants: '/chat/participants', // GET → participantes de uma conversa
-    room: '/chat/room',            // GET → detalhes da sala específica
+    root: '/chat',
+    participants: '/chat/participants',
+    room: '/chat/room',
   },
 } as const;
