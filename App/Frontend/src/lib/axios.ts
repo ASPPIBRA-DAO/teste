@@ -1,5 +1,8 @@
 /* eslint-disable perfectionist/sort-imports */
-import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
+import axios, {
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 
 // 👉 Mantido separado conforme exigência do eslint-plugin-perfectionist
 import { CONFIG } from 'src/global-config';
@@ -78,7 +81,7 @@ export const fetcher = async <T = unknown>(
 };
 
 // ----------------------------------------------------------------------
-// ✅ Endpoints centralizados — com calendário corrigido
+// ✅ Endpoints centralizados — incluindo CHAT
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -106,5 +109,14 @@ export const endpoints = {
     create: '/calendar/create',
     update: '/calendar/update',
     delete: '/calendar/delete',
+  },
+
+  // -----------------------------------------------------
+  // ✅ CHAT — Endpoints adicionados conforme sua API
+  // -----------------------------------------------------
+  chat: {
+    root: '/chat',                 // GET → lista de conversas do usuário
+    participants: '/chat/participants', // GET → participantes de uma conversa
+    room: '/chat/room',            // GET → detalhes da sala específica
   },
 } as const;
