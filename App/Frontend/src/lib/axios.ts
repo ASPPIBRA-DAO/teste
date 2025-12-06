@@ -15,14 +15,12 @@ const axiosInstance = axios.create({
 });
 
 // ----------------------------------------------------------------------
-// ✅ 1. ATIVAR O INTERCEPTOR (Estava comentado)
-// Isso garante que TODA requisição leve o token, mesmo se der F5 na página.
+// ✅ 1. ATIVAR O INTERCEPTOR
 // ----------------------------------------------------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    // Deve usar a mesma chave definida em 'constant.ts' (geralmente 'accessToken')
-    const token = localStorage.getItem('accessToken'); 
-    
+    const token = localStorage.getItem('accessToken');
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,16 +35,14 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Preserva o objeto de erro original para podermos checar o status (ex: 401)
     const customError = {
       message: error?.response?.data?.message || error?.message || 'Algo deu errado!',
       status: error?.response?.status,
       data: error?.response?.data,
     };
-    
+
     console.error('API Error:', customError.message);
-    
-    // Retornamos o erro rejeitado para que o UI possa reagir (ex: mostrar toast)
+
     return Promise.reject(customError);
   }
 );
@@ -69,26 +65,34 @@ export const fetcher = async <T = unknown>(
 };
 
 // ----------------------------------------------------------------------
-// ✅ 3. VERIFICAÇÃO DE ROTAS (Crucial para Hono)
+// ✅ 3. VERIFICAÇÃO DE ROTAS (com calendário corrigido)
 // ----------------------------------------------------------------------
+
 export const endpoints = {
-  // Removi endpoints de template (chat, kanban) que não são essenciais agora
   auth: {
-    me: '/auth/me',        // Removi o prefixo /api se seu Hono não usar
-    signIn: '/auth/sign-in', 
+    me: '/auth/me',
+    signIn: '/auth/sign-in',
     signUp: '/auth/sign-up',
   },
-  // Exemplo de rotas para o Gov-System
+
   proposals: {
     list: '/proposals/list',
     details: '/proposals/details',
     vote: '/proposals/vote',
   },
-  // ✅ ADICIONADO: Rotas de post para corrigir o erro no blog-ssr.ts
+
   post: {
     list: '/post/list',
     details: '/post/details',
     latest: '/post/latest',
     search: '/post/search',
+  },
+
+  // ✅ NOVO — NECESSÁRIO PARA src/actions/calendar.ts
+  calendar: {
+    list: '/calendar/list',
+    create: '/calendar/create',
+    update: '/calendar/update',
+    delete: '/calendar/delete',
   },
 } as const;
