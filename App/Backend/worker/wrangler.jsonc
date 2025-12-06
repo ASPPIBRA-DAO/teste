@@ -1,0 +1,42 @@
+{
+  // 🏷️ IDENTIFICAÇÃO DO PROJETO
+  "name": "governance-system",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  
+  // ID da sua conta Cloudflare (Fornecido por você)
+  "account_id": "5d91807e648c183cb7833caa06dbcbdb",
+
+  // ⚙️ COMPATIBILIDADE E FLAGS
+  // "nodejs_compat": Vital para usar bibliotecas modernas de criptografia e utilitários Node
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+
+  // 👁️ OBSERVABILIDADE
+  // Habilita logs detalhados no painel da Cloudflare para debug
+  "observability": {
+    "enabled": true
+  },
+
+  // 📦 BANCO DE DADOS (D1)
+  // Conecta o código ao seu banco de dados de governança
+  "d1_databases": [
+    {
+      "binding": "DB", // Nome usado no código: env.DB
+      "database_name": "governance-system-db",
+      "database_id": "fbdff5ac-2fcc-4182-9cbf-be6c1d08e287",
+      "migrations_dir": "./migrations" // Pasta onde ficam os arquivos .sql
+    }
+  ],
+
+  // 🗂️ ARMAZENAMENTO (R2)
+  // Conecta o código ao seu bucket de arquivos
+  "r2_buckets": [
+    {
+      "binding": "ASSETS", // Nome usado no código: env.ASSETS
+      "bucket_name": "governance-system-assets",
+      "preview_bucket_name": "governance-system-assets" // Bucket usado ao rodar 'wrangler dev'
+    }
+  ]
+}
