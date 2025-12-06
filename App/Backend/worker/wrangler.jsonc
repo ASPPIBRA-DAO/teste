@@ -3,40 +3,41 @@
   "name": "governance-system",
   "main": "src/index.ts",
   "compatibility_date": "2025-01-01",
-  
-  // ID da sua conta Cloudflare (Fornecido por você)
+  // ID da sua conta Cloudflare
   "account_id": "5d91807e648c183cb7833caa06dbcbdb",
-
+  // ✅ DOMÍNIO PERSONALIZADO
+  // Configura automaticamente o DNS e SSL para api.asppibra.com
+  "routes": [
+    {
+      "pattern": "api.asppibra.com",
+      "custom_domain": true
+    }
+  ],
   // ⚙️ COMPATIBILIDADE E FLAGS
-  // "nodejs_compat": Vital para usar bibliotecas modernas de criptografia e utilitários Node
+  // "nodejs_compat" é essencial para bibliotecas de criptografia (bcrypt, jwt)
   "compatibility_flags": [
     "nodejs_compat"
   ],
-
   // 👁️ OBSERVABILIDADE
-  // Habilita logs detalhados no painel da Cloudflare para debug
+  // Permite ver logs em tempo real no painel da Cloudflare
   "observability": {
     "enabled": true
   },
-
   // 📦 BANCO DE DADOS (D1)
-  // Conecta o código ao seu banco de dados de governança
   "d1_databases": [
     {
-      "binding": "DB", // Nome usado no código: env.DB
+      "binding": "DB", // Nome usado no código (env.DB)
       "database_name": "governance-system-db",
       "database_id": "fbdff5ac-2fcc-4182-9cbf-be6c1d08e287",
-      "migrations_dir": "./migrations" // Pasta onde ficam os arquivos .sql
+      "migrations_dir": "./migrations"
     }
   ],
-
   // 🗂️ ARMAZENAMENTO (R2)
-  // Conecta o código ao seu bucket de arquivos
   "r2_buckets": [
     {
-      "binding": "ASSETS", // Nome usado no código: env.ASSETS
+      "binding": "ASSETS", // Nome usado no código (env.ASSETS)
       "bucket_name": "governance-system-assets",
-      "preview_bucket_name": "governance-system-assets" // Bucket usado ao rodar 'wrangler dev'
+      "preview_bucket_name": "governance-system-assets" // Bucket usado em dev (pode ser o mesmo ou outro)
     }
   ]
 }
