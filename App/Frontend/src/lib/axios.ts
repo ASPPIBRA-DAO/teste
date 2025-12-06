@@ -1,5 +1,7 @@
 import type { AxiosRequestConfig } from 'axios';
 import axios from 'axios';
+
+// 👉 Espaço obrigatório exigido pelo eslint-plugin-perfectionist
 import { CONFIG } from 'src/global-config';
 
 // ----------------------------------------------------------------------
