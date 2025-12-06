@@ -10,7 +10,8 @@ import axios, { fetcher, endpoints } from 'src/lib/axios';
 
 const enableServer = false;
 
-const CALENDAR_ENDPOINT = endpoints.calendar;
+// ❗ CORRIGIDO: antes era endpoints.calendar (OBJETO) — agora é STRING
+const CALENDAR_LIST_ENDPOINT = endpoints.calendar.list;
 
 const swrOptions: SWRConfiguration = {
   revalidateIfStale: enableServer,
@@ -25,12 +26,17 @@ type EventsData = {
 };
 
 export function useGetEvents() {
-  const { data, isLoading, error, isValidating } = useSWR<EventsData>(CALENDAR_ENDPOINT, fetcher, {
-    ...swrOptions,
-  });
+  const { data, isLoading, error, isValidating } = useSWR<EventsData>(
+    CALENDAR_LIST_ENDPOINT, // string correta
+    fetcher,
+    { ...swrOptions }
+  );
 
   const memoizedValue = useMemo(() => {
-    const events = data?.events.map((event) => ({ ...event, textColor: event.color }));
+    const events = data?.events.map((event) => ({
+      ...event,
+      textColor: event.color,
+    }));
 
     return {
       events: events || [],
@@ -47,21 +53,14 @@ export function useGetEvents() {
 // ----------------------------------------------------------------------
 
 export async function createEvent(eventData: ICalendarEvent) {
-  /**
-   * Work on server
-   */
   if (enableServer) {
-    const data = { eventData };
-    await axios.post(CALENDAR_ENDPOINT, data);
+    await axios.post(endpoints.calendar.create, { eventData });
   }
 
-  /**
-   * Work in local
-   */
   mutate(
-    CALENDAR_ENDPOINT,
-    (currentData) => {
-      const currentEvents: ICalendarEvent[] = currentData?.events;
+    CALENDAR_LIST_ENDPOINT,
+    (currentData: EventsData | undefined) => {
+      const currentEvents = currentData?.events || [];
 
       const events = [...currentEvents, eventData];
 
@@ -74,21 +73,14 @@ export async function createEvent(eventData: ICalendarEvent) {
 // ----------------------------------------------------------------------
 
 export async function updateEvent(eventData: Partial<ICalendarEvent>) {
-  /**
-   * Work on server
-   */
   if (enableServer) {
-    const data = { eventData };
-    await axios.put(CALENDAR_ENDPOINT, data);
+    await axios.put(endpoints.calendar.update, { eventData });
   }
 
-  /**
-   * Work in local
-   */
   mutate(
-    CALENDAR_ENDPOINT,
-    (currentData) => {
-      const currentEvents: ICalendarEvent[] = currentData?.events;
+    CALENDAR_LIST_ENDPOINT,
+    (currentData: EventsData | undefined) => {
+      const currentEvents = currentData?.events || [];
 
       const events = currentEvents.map((event) =>
         event.id === eventData.id ? { ...event, ...eventData } : event
@@ -103,21 +95,14 @@ export async function updateEvent(eventData: Partial<ICalendarEvent>) {
 // ----------------------------------------------------------------------
 
 export async function deleteEvent(eventId: string) {
-  /**
-   * Work on server
-   */
   if (enableServer) {
-    const data = { eventId };
-    await axios.patch(CALENDAR_ENDPOINT, data);
+    await axios.patch(endpoints.calendar.delete, { eventId });
   }
 
-  /**
-   * Work in local
-   */
   mutate(
-    CALENDAR_ENDPOINT,
-    (currentData) => {
-      const currentEvents: ICalendarEvent[] = currentData?.events;
+    CALENDAR_LIST_ENDPOINT,
+    (currentData: EventsData | undefined) => {
+      const currentEvents = currentData?.events || [];
 
       const events = currentEvents.filter((event) => event.id !== eventId);
 
