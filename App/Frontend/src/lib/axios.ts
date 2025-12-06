@@ -1,14 +1,13 @@
-import type { AxiosRequestConfig } from 'axios';
-import axios from 'axios';
+/* eslint-disable perfectionist/sort-imports */
+import axios, { type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
 
-// 👉 Espaço obrigatório exigido pelo eslint-plugin-perfectionist
+// 👉 Mantido separado conforme exigência do eslint-plugin-perfectionist
 import { CONFIG } from 'src/global-config';
 
 // ----------------------------------------------------------------------
 // ✅ Instância principal do Axios
 // ----------------------------------------------------------------------
 
-// Usa a URL configurada no sistema (ex: Worker do Cloudflare)
 const axiosInstance = axios.create({
   baseURL: CONFIG.serverUrl,
   headers: {
@@ -19,13 +18,14 @@ const axiosInstance = axios.create({
 // ----------------------------------------------------------------------
 // ✅ Interceptor de Requisição — Injeta Token JWT
 // ----------------------------------------------------------------------
+
 axiosInstance.interceptors.request.use(
-  (config) => {
-    // Evita erro no SSR
+  (config: InternalAxiosRequestConfig) => {
     const isBrowser = typeof window !== 'undefined';
 
     if (isBrowser) {
       const token = localStorage.getItem('accessToken');
+
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -39,6 +39,7 @@ axiosInstance.interceptors.request.use(
 // ----------------------------------------------------------------------
 // ✅ Interceptor de Resposta — Tratamento centralizado de erros
 // ----------------------------------------------------------------------
+
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -62,6 +63,7 @@ export default axiosInstance;
 // ----------------------------------------------------------------------
 // ✅ Fetcher — usado por SWR ou chamadas simples
 // ----------------------------------------------------------------------
+
 export const fetcher = async <T = unknown>(
   args: string | [string, AxiosRequestConfig]
 ): Promise<T> => {
@@ -78,6 +80,7 @@ export const fetcher = async <T = unknown>(
 // ----------------------------------------------------------------------
 // ✅ Endpoints centralizados — com calendário corrigido
 // ----------------------------------------------------------------------
+
 export const endpoints = {
   auth: {
     me: '/auth/me',
@@ -98,7 +101,6 @@ export const endpoints = {
     search: '/post/search',
   },
 
-  // Necessário para src/actions/calendar.ts
   calendar: {
     list: '/calendar/list',
     create: '/calendar/create',
