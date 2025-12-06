@@ -1,34 +1,32 @@
 'use client';
 
-import type { AuthState } from '../../types';
-
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/lib/axios';
 
-import { JWT_STORAGE_KEY } from './constant';
 import { AuthContext } from '../auth-context';
 import { setSession, isValidToken } from './utils';
+import type { AuthState } from '../../types';
 
 // ----------------------------------------------------------------------
-
-/**
- * NOTE:
- * We only build demo at basic level.
- * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
- */
 
 type Props = {
   children: React.ReactNode;
 };
 
 export function AuthProvider({ children }: Props) {
-  const { state, setState } = useSetState<AuthState>({ user: null, loading: true });
+  const { state, setState } = useSetState<AuthState>({
+    user: null,
+    loading: true,
+  });
 
+  // ----------------------------------------------------------------------
+  // 1. Verifica a sessão ao carregar a página (F5)
+  // ----------------------------------------------------------------------
   const checkUserSession = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(JWT_STORAGE_KEY);
+      const accessToken = localStorage.getItem('accessToken');
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
@@ -42,7 +40,8 @@ export function AuthProvider({ children }: Props) {
         setState({ user: null, loading: false });
       }
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao restaurar sessão:', error);
+      setSession(null);
       setState({ user: null, loading: false });
     }
   }, [setState]);
@@ -52,17 +51,46 @@ export function AuthProvider({ children }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // LOGIN
-  const login = useCallback(async (email, password) => {
-    const res = await axios.post(endpoints.auth.login, {
+  // ----------------------------------------------------------------------
+  // 2. Login (Tipagem Adicionada: string)
+  // ----------------------------------------------------------------------
+  const login = useCallback(async (email: string, password: string) => {
+    const res = await axios.post(endpoints.auth.signIn, {
       email,
       password,
     });
+
     const { accessToken, user } = res.data;
 
     setSession(accessToken);
 
     setState({ user: { ...user, accessToken } });
+  }, [setState]);
+
+  // ----------------------------------------------------------------------
+  // 3. Register (Tipagem Adicionada: string)
+  // ----------------------------------------------------------------------
+  const register = useCallback(async (email: string, password: string, firstName: string, lastName: string) => {
+    const res = await axios.post(endpoints.auth.signUp, {
+      email,
+      password,
+      firstName,
+      lastName,
+    });
+
+    const { accessToken, user } = res.data;
+
+    setSession(accessToken);
+
+    setState({ user: { ...user, accessToken } });
+  }, [setState]);
+
+  // ----------------------------------------------------------------------
+  // 4. Logout
+  // ----------------------------------------------------------------------
+  const logout = useCallback(async () => {
+    setSession(null);
+    setState({ user: null });
   }, [setState]);
 
   // ----------------------------------------------------------------------
@@ -73,15 +101,17 @@ export function AuthProvider({ children }: Props) {
 
   const memoizedValue = useMemo(
     () => ({
-      user: state.user ? { ...state.user, role: state.user?.role ?? 'admin' } : null,
+      user: state.user ? { ...state.user, role: state.user?.role ?? 'user' } : null,
       checkUserSession,
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
-      // Login
+      // Métodos
       login,
+      register,
+      logout,
     }),
-    [checkUserSession, state.user, status, login]
+    [checkUserSession, state.user, status, login, register, logout]
   );
 
   return <AuthContext.Provider value={memoizedValue}>{children}</AuthContext.Provider>;

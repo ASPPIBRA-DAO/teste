@@ -2,8 +2,6 @@ import { paths } from 'src/routes/paths';
 
 import axios from 'src/lib/axios';
 
-import { JWT_STORAGE_KEY } from './constant';
-
 // ----------------------------------------------------------------------
 
 export function jwtDecode(token: string) {
@@ -12,13 +10,21 @@ export function jwtDecode(token: string) {
 
     const parts = token.split('.');
     if (parts.length < 2) {
-      throw new Error('Invalid token!');
+      throw new Error('Token inválido: formato incorreto (faltam partes)');
     }
 
     const base64Url = parts[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    
-    // Correção para caracteres UTF-8 (acentos em nomes, etc.)
+
+    // 1. Substitui caracteres URL-safe pelos padrão Base64
+    let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+
+    // 2. CORREÇÃO CRÍTICA: Adiciona o Padding (=) obrigatório para o atob funcionar
+    const padding = base64.length % 4;
+    if (padding) {
+      base64 += '='.repeat(4 - padding);
+    }
+
+    // 3. Decodifica e trata caracteres UTF-8 corretamente
     const jsonPayload = decodeURIComponent(
       window
         .atob(base64)
@@ -29,8 +35,8 @@ export function jwtDecode(token: string) {
 
     return JSON.parse(jsonPayload);
   } catch (error) {
-    console.error('Error decoding token:', error);
-    return null; // Retorna null em vez de estourar erro para não quebrar a UI
+    console.error('Erro ao decodificar JWT:', error);
+    return null;
   }
 }
 
@@ -44,15 +50,20 @@ export function isValidToken(accessToken: string) {
   try {
     const decoded = jwtDecode(accessToken);
 
+    // Se não conseguiu decodificar ou não tem validade (exp)
     if (!decoded || !('exp' in decoded)) {
+      console.warn('Token inválido ou sem campo de expiração (exp):', decoded);
       return false;
     }
 
     const currentTime = Date.now() / 1000;
 
+    // Log para ajudar a entender por que o login cai
+    // console.log(`[Auth] Token expira em: ${decoded.exp} | Agora: ${currentTime}`);
+
     return decoded.exp > currentTime;
   } catch (error) {
-    console.error('Error during token validation:', error);
+    console.error('Erro na validação do token:', error);
     return false;
   }
 }
@@ -60,32 +71,31 @@ export function isValidToken(accessToken: string) {
 // ----------------------------------------------------------------------
 
 export function tokenExpired(exp: number) {
-  // Opcional: só define o timeout se faltar menos de X dias para evitar overflow de integer em 32-bit
   const currentTime = Date.now();
   const timeLeft = exp * 1000 - currentTime;
 
-  // Se o token já expirou ou expira logo, limpa tudo.
+  // Se já expirou, limpa a sessão imediatamente
   if (timeLeft <= 0) {
-      sessionExpiredAction();
-      return;
+    sessionExpiredAction();
+    return;
   }
 
   // Define o timer para deslogar automaticamente
   setTimeout(() => {
     try {
-      // UX Melhorada: Não usar alert. Apenas redirecionar.
+      console.warn('Sessão expirada pelo timer.');
       sessionExpiredAction();
     } catch (error) {
-      console.error('Error during token expiration:', error);
+      console.error('Erro no timer de expiração:', error);
     }
   }, timeLeft);
 }
 
-// Função auxiliar para limpar e redirecionar
+// Ação centralizada para limpar dados e redirecionar
 const sessionExpiredAction = () => {
-    localStorage.removeItem(JWT_STORAGE_KEY); // Usa localStorage
-    delete axios.defaults.headers.common.Authorization;
-    window.location.href = paths.auth.jwt.signIn; // Redirecionamento forçado
+  localStorage.removeItem('accessToken');
+  delete axios.defaults.headers.common.Authorization;
+  window.location.href = paths.auth.jwt.signIn;
 };
 
 // ----------------------------------------------------------------------
@@ -93,25 +103,27 @@ const sessionExpiredAction = () => {
 export async function setSession(accessToken: string | null) {
   try {
     if (accessToken) {
-      // ✅ CORREÇÃO: Alinhado com axios.ts (localStorage)
-      localStorage.setItem(JWT_STORAGE_KEY, accessToken);
+      // ✅ Salva no LocalStorage com a chave 'accessToken' (padrão do projeto)
+      localStorage.setItem('accessToken', accessToken);
 
+      // ✅ Configura o Axios Header Globalmente
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-      const decodedToken = jwtDecode(accessToken); 
+      const decodedToken = jwtDecode(accessToken);
 
       if (decodedToken && 'exp' in decodedToken) {
         tokenExpired(decodedToken.exp);
       } else {
-        throw new Error('Invalid access token!');
+        // Se o backend enviar um token sem 'exp', avisamos no console mas não bloqueamos
+        // console.warn('Aviso: Token recebido não possui expiração definida.');
       }
     } else {
       // Logout
-      localStorage.removeItem(JWT_STORAGE_KEY);
+      localStorage.removeItem('accessToken');
       delete axios.defaults.headers.common.Authorization;
     }
   } catch (error) {
-    console.error('Error during set session:', error);
+    console.error('Erro ao salvar sessão:', error);
     throw error;
   }
 }

@@ -14,7 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { Iconify } from 'src/components/iconify';
@@ -23,7 +23,9 @@ import { Form, Field, schemaUtils } from 'src/components/hook-form';
 import { useAuthContext } from '../../hooks';
 import { getErrorMessage } from '../../utils';
 import { FormHead } from '../../components/form-head';
-import { signInWithPassword } from '../../context/jwt';
+
+// ❌ REMOVIDO: Não usamos mais a função solta, usamos a do contexto
+// import { signInWithPassword } from '../../context/jwt';
 
 // ----------------------------------------------------------------------
 
@@ -42,9 +44,13 @@ export const SignInSchema = z.object({
 export function JwtSignInView() {
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get('returnTo');
+
   const showPassword = useBoolean();
 
-  const { checkUserSession } = useAuthContext();
+  // ✅ CORREÇÃO: Pegamos a função 'login' que atualiza o estado global
+  const { login } = useAuthContext();
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -65,10 +71,12 @@ export function JwtSignInView() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await signInWithPassword({ email: data.email, password: data.password });
-      await checkUserSession?.();
+      // ✅ 1. Usa a função do Provider (que salva token E atualiza estado React)
+      await login(data.email, data.password);
 
-      router.refresh();
+      // 2. Redireciona para Dashboard
+      router.push(returnTo || paths.dashboard.root);
+
     } catch (error) {
       console.error(error);
       const feedbackMessage = getErrorMessage(error);

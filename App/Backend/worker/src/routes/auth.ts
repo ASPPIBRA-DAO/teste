@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { sign } from 'hono/jwt'; // ✅ Correção: Usando JWT nativo do Hono (Edge Compatible)
+import { sign, verify } from 'hono/jwt'; // ✅ Adicionado 'verify' para validar o token
 import { compare, hash } from 'bcryptjs';
 import { Database } from '../db';
 import { users } from '../db/schema';
@@ -17,18 +17,17 @@ type Bindings = {
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // ----------------------------------------------------------------------
-// Rota de LOGIN (Alterado de /login para /sign-in para bater com o Frontend)
+// Rota de LOGIN
 // ----------------------------------------------------------------------
 auth.post('/sign-in', async (c) => {
   try {
-    const db = c.get('db'); 
+    const db = c.get('db');
     const { email, password } = await c.req.json();
 
     if (!email || !password) {
       return c.json({ error: 'Email e senha são obrigatórios' }, 400);
     }
 
-    // Busca usuário
     const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
     const user = result[0];
 
@@ -36,33 +35,33 @@ auth.post('/sign-in', async (c) => {
       return c.json({ error: 'Credenciais inválidas' }, 401);
     }
 
-    // Compara senha (bcryptjs funciona bem no Edge)
     const isValid = await compare(password, user.password);
 
     if (!isValid) {
       return c.json({ error: 'Credenciais inválidas' }, 401);
     }
 
-    // Gera o Token usando Hono JWT
     const accessToken = await sign(
-      { 
-        userId: user.id, 
+      {
+        userId: user.id,
         email: user.email,
-        role: 'user', // ou user.role
+        role: user.role || 'user',
         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 dias
       },
       c.env.JWT_SECRET
     );
 
-    // Retorna exatamente o formato que o Frontend action.ts espera
-    return c.json({ 
-      accessToken, 
-      user: { 
-        id: user.id, 
+    return c.json({
+      accessToken,
+      user: {
+        id: user.id,
         email: user.email,
-        firstName: user.firstName, // Se tiver no banco
-        lastName: user.lastName    // Se tiver no banco
-      } 
+        firstName: user.firstName,
+        lastName: user.lastName,
+        displayName: `${user.firstName} ${user.lastName}`,
+        photoURL: null,
+        role: user.role
+      }
     });
 
   } catch (error) {
@@ -72,54 +71,102 @@ auth.post('/sign-in', async (c) => {
 });
 
 // ----------------------------------------------------------------------
-// Rota de REGISTRO (Adicionado para completar o fluxo do Frontend)
+// Rota de REGISTRO
 // ----------------------------------------------------------------------
 auth.post('/sign-up', async (c) => {
   try {
     const db = c.get('db');
+    // Adicionei validação de campos obrigatórios aqui
     const { email, password, firstName, lastName } = await c.req.json();
 
-    if (!email || !password) {
-      return c.json({ error: 'Dados incompletos' }, 400);
+    if (!email || !password || !firstName || !lastName) {
+      return c.json({ error: 'Todos os campos são obrigatórios' }, 400);
     }
 
-    // 1. Verifica se usuário já existe
     const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (existingUser.length > 0) {
       return c.json({ error: 'Este email já está em uso' }, 409);
     }
 
-    // 2. Criptografa a senha
     const passwordHash = await hash(password, 10);
 
-    // 3. Insere no banco
-    // NOTA: Dependendo do seu schema, o ID pode ser autogerado. 
-    // Se for UUID manual, precisaria gerar aqui. Assumindo autoincrement ou UUID default do banco.
     const newUser = await db.insert(users).values({
       email,
       password: passwordHash,
       firstName,
       lastName,
-      // role: 'user', // Defina um padrão se necessário
-      // createdAt: new Date()
-    }).returning(); // .returning() funciona no D1/Postgres para devolver o dado criado
+      role: 'user', // Garante que tem role
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }).returning();
 
     const user = newUser[0];
 
-    // 4. Já loga o usuário direto após o cadastro
     const accessToken = await sign(
       { userId: user.id, email: user.email, role: 'user', exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 },
       c.env.JWT_SECRET
     );
 
-    return c.json({ 
-      accessToken, 
-      user: { id: user.id, email: user.email, firstName, lastName } 
+    return c.json({
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        displayName: `${user.firstName} ${user.lastName}`,
+        role: user.role
+      }
     });
 
   } catch (error) {
     console.error('Erro no registro:', error);
     return c.json({ error: 'Erro ao criar conta' }, 500);
+  }
+});
+
+// ----------------------------------------------------------------------
+// 🆕 Rota ME (Recuperar Sessão) - ESSENCIAL PARA O FRONTEND
+// ----------------------------------------------------------------------
+auth.get('/me', async (c) => {
+  const header = c.req.header('Authorization');
+
+  if (!header) {
+    return c.json({ error: 'Token não fornecido' }, 401);
+  }
+
+  const token = header.split(' ')[1]; // Remove "Bearer "
+
+  try {
+    // 1. Valida o Token
+    const payload = await verify(token, c.env.JWT_SECRET);
+
+    // 2. Busca o usuário no banco para ter dados atualizados
+    const db = c.get('db');
+    // payload.userId precisa ser tratado como número se seu ID no banco for number
+    const result = await db.select().from(users).where(eq(users.id, Number(payload.userId))).limit(1);
+    const user = result[0];
+
+    if (!user) {
+      return c.json({ error: 'Usuário não encontrado' }, 401);
+    }
+
+    // 3. Retorna o objeto user formatado
+    return c.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        displayName: `${user.firstName} ${user.lastName}`,
+        photoURL: null,
+        role: user.role || 'user'
+      }
+    });
+
+  } catch (error) {
+    console.error('Erro ao validar token:', error);
+    return c.json({ error: 'Token inválido' }, 401);
   }
 });
 

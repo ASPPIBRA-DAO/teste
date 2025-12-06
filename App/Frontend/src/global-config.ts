@@ -11,7 +11,7 @@ export type ConfigValue = {
   assetsDir: string;
   isStaticExport: boolean;
   auth: {
-    method: 'jwt' | 'supabase'; // Deixei Supabase como opção futura
+    method: 'jwt' | 'supabase';
     skip: boolean;
     redirectPath: string;
   };
@@ -21,25 +21,27 @@ export type ConfigValue = {
 // ----------------------------------------------------------------------
 
 export const CONFIG: ConfigValue = {
-  appName: 'Gov-System', // ✅ Atualizado
+  appName: 'Gov-System',
   appVersion: packageJson.version,
-  
-  // ✅ Ponto Crucial: Essa variável deve apontar para o seu Cloudflare Worker
-  serverUrl: process.env.NEXT_PUBLIC_HOST_API ?? '', 
-  
+
+  // 🔧 AJUSTE DE SEGURANÇA:
+  // Usa || em vez de ?? para garantir que strings vazias sejam ignoradas
+  // e o fallback localhost:8787 seja usado em desenvolvimento local se necessário.
+  serverUrl: process.env.NEXT_PUBLIC_HOST_API || 'http://localhost:8787',
+
   assetsDir: process.env.NEXT_PUBLIC_ASSETS_DIR ?? '',
   isStaticExport: JSON.parse(process.env.BUILD_STATIC_EXPORT ?? 'false'),
-  
+
   /**
    * Auth
    * @method jwt | supabase
    */
   auth: {
-    method: 'jwt', // ✅ Mantém 'jwt' pois seu action.ts usa axios manual
+    method: 'jwt',
     skip: false,
     redirectPath: paths.dashboard.root,
   },
-  
+
   /**
    * Supabase
    * (Mantido caso você decida usar o Storage ou DB direto do front no futuro)
