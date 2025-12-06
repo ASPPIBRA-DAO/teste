@@ -1,12 +1,12 @@
 import type { AxiosRequestConfig } from 'axios';
-
 import axios from 'axios';
-
 import { CONFIG } from 'src/global-config';
 
 // ----------------------------------------------------------------------
+// ✅ Instância principal do Axios
+// ----------------------------------------------------------------------
 
-// Certifique-se que CONFIG.serverUrl é a URL do seu Worker (ex: https://api.gov-system.workers.dev)
+// Usa a URL configurada no sistema (ex: Worker do Cloudflare)
 const axiosInstance = axios.create({
   baseURL: CONFIG.serverUrl,
   headers: {
@@ -15,33 +15,41 @@ const axiosInstance = axios.create({
 });
 
 // ----------------------------------------------------------------------
-// ✅ 1. ATIVAR O INTERCEPTOR
+// ✅ Interceptor de Requisição — Injeta Token JWT
 // ----------------------------------------------------------------------
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    // Evita erro no SSR
+    const isBrowser = typeof window !== 'undefined';
 
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (isBrowser) {
+      const token = localStorage.getItem('accessToken');
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
+
     return config;
   },
   (error) => Promise.reject(error)
 );
 
 // ----------------------------------------------------------------------
-// ✅ 2. MELHORIA NO TRATAMENTO DE ERROS
+// ✅ Interceptor de Resposta — Tratamento centralizado de erros
 // ----------------------------------------------------------------------
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     const customError = {
-      message: error?.response?.data?.message || error?.message || 'Algo deu errado!',
-      status: error?.response?.status,
-      data: error?.response?.data,
+      message:
+        error?.response?.data?.message ||
+        error?.message ||
+        'Algo deu errado na requisição!',
+      status: error?.response?.status || 500,
+      data: error?.response?.data || null,
     };
 
-    console.error('API Error:', customError.message);
+    console.error('API Error:', customError);
 
     return Promise.reject(customError);
   }
@@ -50,7 +58,8 @@ axiosInstance.interceptors.response.use(
 export default axiosInstance;
 
 // ----------------------------------------------------------------------
-
+// ✅ Fetcher — usado por SWR ou chamadas simples
+// ----------------------------------------------------------------------
 export const fetcher = async <T = unknown>(
   args: string | [string, AxiosRequestConfig]
 ): Promise<T> => {
@@ -65,9 +74,8 @@ export const fetcher = async <T = unknown>(
 };
 
 // ----------------------------------------------------------------------
-// ✅ 3. VERIFICAÇÃO DE ROTAS (com calendário corrigido)
+// ✅ Endpoints centralizados — com calendário corrigido
 // ----------------------------------------------------------------------
-
 export const endpoints = {
   auth: {
     me: '/auth/me',
@@ -88,7 +96,7 @@ export const endpoints = {
     search: '/post/search',
   },
 
-  // ✅ NOVO — NECESSÁRIO PARA src/actions/calendar.ts
+  // Necessário para src/actions/calendar.ts
   calendar: {
     list: '/calendar/list',
     create: '/calendar/create',
