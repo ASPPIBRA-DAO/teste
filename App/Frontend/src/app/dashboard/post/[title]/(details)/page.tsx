@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import type { IPostItem } from 'src/types/blog';
+// import type { IPostItem } from 'src/types/blog'; // Não é mais necessária
 
-import { kebabCase } from 'es-toolkit';
+// import { kebabCase } from 'es-toolkit'; // Não é mais necessária
 
 import { CONFIG } from 'src/global-config';
 import { getPost } from 'src/actions/blog-ssr';
-import axios, { endpoints } from 'src/lib/axios';
+// import axios, { endpoints } from 'src/lib/axios'; // Não são mais necessárias
 
 import { PostDetailsView } from 'src/sections/blog/view';
 
@@ -30,19 +30,22 @@ export default async function Page({ params }: Props) {
 /**
  * Static Exports in Next.js
  *
- * 1. Set `isStaticExport = true` in `next.config.{mjs|ts}`.
- * 2. This allows `generateStaticParams()` to pre-render dynamic routes at build time.
- *
- * For more details, see:
- * https://nextjs.org/docs/app/building-your-application/deploying/static-exports
- *
- * NOTE: Remove all "generateStaticParams()" functions if not using static exports.
+ * CORREÇÃO FINAL PARA O DEPLOY (CLOUDFLARE PAGES):
+ * Retornamos um array vazio [].
+ * Isso desabilita a geração estática no build para esta rota, 
+ * prevenindo que o Next.js tente conectar na API durante o processo de deploy, 
+ * o que causava o erro 'Cannot read properties of undefined (reading 'slice')'.
  */
 export async function generateStaticParams() {
+  // ✅ Retorna vazio para desabilitar a geração estática no build
+  return [];
+
+  /* CÓDIGO ORIGINAL COMENTADO PARA REFERÊNCIA:
   const res = await axios.get(endpoints.post.list);
   const data: IPostItem[] = CONFIG.isStaticExport ? res.data.posts : res.data.posts.slice(0, 1);
 
   return data.map((post) => ({
     title: kebabCase(post.title),
   }));
+  */
 }
