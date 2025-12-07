@@ -1,11 +1,9 @@
 import type { NavMainProps } from './main/nav/types';
 
-import { paths } from 'src/routes/paths';
-
-import { CONFIG } from 'src/global-config';
-
-import { Iconify } from 'src/components/iconify';
-
-// ----------------------------------------------------------------------
-
-export const navData: NavMainProps['data'] = [];
+export const navData: NavMainProps['data'] = [
+  { title: 'Ecosystem', path: '#', },
+  { title: 'Community', path: '#', },
+  { title: 'Team', path: '#', },
+  { title: 'Roadmap', path: '#', },
+  { title: 'FAQs', path: '#', },
+];

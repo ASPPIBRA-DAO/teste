@@ -86,7 +86,17 @@ export function MainLayout({
             data={navData}
             sx={(theme) => ({
               display: 'none',
-              [theme.breakpoints.up(layoutQuery)]: { mr: 2.5, display: 'flex' },
+              [theme.breakpoints.up(layoutQuery)]: {
+                display: 'flex',
+                ...(isHomePage && {
+                  position: 'absolute',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                }),
+                ...(!isHomePage && {
+                  mr: 2.5,
+                }),
+              },
             })}
           />
 
@@ -107,7 +117,14 @@ export function MainLayout({
         {...slotProps?.header}
         slots={{ ...headerSlots, ...slotProps?.header?.slots }}
         slotProps={slotProps?.header?.slotProps}
-        sx={slotProps?.header?.sx}
+        sx={{
+          ...slotProps?.header?.sx,
+          ...(isHomePage && {
+            '.MuiToolbar-root': {
+              position: 'relative',
+            },
+          }),
+        }}
       />
     );
   };
