@@ -1,0 +1,9 @@
+Este é um resumo da análise dos componentes 'Footer' no projeto:
+
+- **`Footer` e `HomeFooter`**: Os únicos componentes de rodapé estão localizados em `App/Frontend/src/layouts/main/footer.tsx`.
+
+- **`MainLayout`**: É o único layout que utiliza os componentes de rodapé.
+    - A página inicial (`/`) usa o `HomeFooter`.
+    - As páginas `/about-us`, `/contact-us`, e `/faqs` usam o `Footer`.
+
+- **Outros layouts**: `DashboardLayout`, `SimpleLayout`, e `AuthSplitLayout` não possuem rodapés.

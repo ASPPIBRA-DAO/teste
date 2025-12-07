@@ -1,0 +1,48 @@
+Este é um resumo da análise dos componentes de Cabeçalho e Rodapé no projeto:
+
+**Análise de Cabeçalho (Header)**
+
+- **`HeaderSection`**: O componente de cabeçalho principal está localizado em `App/Frontend/src/layouts/core/header-section.tsx`. Ele é usado em todos os layouts.
+
+- **`DashboardLayout`**: Usa `HeaderSection`. As páginas no diretório `App/Frontend/src/app/dashboard` usam este layout.
+
+- **`MainLayout`**: Usa `HeaderSection`. As seguintes páginas usam este layout:
+    - `/` (home)
+    - `/about-us`
+    - `/contact-us`
+    - `/faqs`
+
+- **`SimpleLayout`**: Usa `HeaderSection`. As seguintes páginas usam este layout:
+    - `/coming-soon`
+    - `/maintenance`
+    - `/payment`
+    - `/pricing`
+
+- **`AuthSplitLayout`**: Usa `HeaderSection`. As seguintes páginas usam este layout:
+    - `/auth/jwt/sign-in`
+    - `/auth/jwt/sign-up`
+    - `/auth/supabase/sign-in`
+    - `/auth/supabase/sign-up`
+    - `/auth/supabase/reset-password`
+    - `/auth/supabase/update-password`
+    - `/auth/supabase/verify`
+    - `/auth-demo/centered/sign-in`
+    - `/auth-demo/centered/sign-up`
+    - `/auth-demo/centered/reset-password`
+    - `/auth-demo/centered/update-password`
+    - `/auth-demo/centered/verify`
+    - `/auth-demo/split/sign-in`
+    - `/auth-demo/split/sign-up`
+    - `/auth-demo/split/reset-password`
+    - `/auth-demo/split/update-password`
+    - `/auth-demo/split/verify`
+
+**Análise de Rodapé (Footer)**
+
+- **`Footer` e `HomeFooter`**: Os únicos componentes de rodapé estão localizados em `App/Frontend/src/layouts/main/footer.tsx`.
+
+- **`MainLayout`**: É o único layout que utiliza os componentes de rodapé.
+    - A página inicial (`/`) usa o `HomeFooter`.
+    - As páginas `/about-us`, `/contact-us`, e `/faqs` usam o `Footer`.
+
+- **Outros layouts**: `DashboardLayout`, `SimpleLayout`, e `AuthSplitLayout` não possuem rodapés.

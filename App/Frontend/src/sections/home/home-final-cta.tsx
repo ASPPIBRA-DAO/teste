@@ -19,7 +19,7 @@ import { FloatLine, FloatPlusIcon } from './components/svg-elements';
 
 // ----------------------------------------------------------------------
 
-export function HomeAdvertisement({ sx, ...other }: BoxProps) {
+export function HomeFinalCTA({ sx, ...other }: BoxProps) {
   return (
     <Box
       component="section"

@@ -7,15 +7,13 @@ import { ScrollProgress, useScrollProgress } from 'src/components/animate/scroll
 
 import { HomeHero } from '../home-hero';
 import { HomeFAQs } from '../home-faqs';
-import { HomeZoneUI } from '../home-zone-ui';
-import { HomeMinimal } from '../home-minimal';
-import { HomePricing } from '../home-pricing';
-import { HomeForDesigner } from '../home-for-designer';
-import { HomeTestimonials } from '../home-testimonials';
+import { HomeTeam } from '../home-team';
+import { HomeRoadmap } from '../home-roadmap';
+import { HomeEcosystem } from '../home-ecosystem';
+import { HomeCommunity } from '../home-community';
+import { HomeLatestNews } from '../home-latest-news';
 import { HomeIntegrations } from '../home-integrations';
-import { HomeAdvertisement } from '../home-advertisement';
-import { HomeHugePackElements } from '../home-hugepack-elements';
-import { HomeHighlightFeatures } from '../home-highlight-features';
+import { HomeFinalCTA } from '../home-final-cta';
 
 // ----------------------------------------------------------------------
 
@@ -35,25 +33,21 @@ export function HomeView() {
       <HomeHero />
 
       <Stack sx={{ position: 'relative', bgcolor: 'background.default' }}>
-        <HomeMinimal />
-
-        <HomeHugePackElements />
-
-        <HomeForDesigner />
-
-        <HomeHighlightFeatures />
+        <HomeEcosystem />
 
         <HomeIntegrations />
 
-        <HomePricing />
+        <HomeCommunity />
 
-        <HomeTestimonials />
+        <HomeTeam />
+
+        <HomeLatestNews />
+
+        <HomeRoadmap />
 
         <HomeFAQs />
 
-        <HomeZoneUI />
-
-        <HomeAdvertisement />
+        <HomeFinalCTA />
       </Stack>
     </>
   );
