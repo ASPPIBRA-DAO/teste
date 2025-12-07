@@ -24,7 +24,6 @@ import {
   _postTitles,
   _firstNames,
   _eventNames,
-  _courseNames,
   _fullAddress,
   _companyNames,
   _productNames,
@@ -41,7 +40,6 @@ export const _mock = {
   boolean: (index: number) => _booleans[index],
   role: (index: number) => _roles[index],
   // Text
-  courseNames: (index: number) => _courseNames[index],
   fileNames: (index: number) => _fileNames[index],
   eventNames: (index: number) => _eventNames[index],
   taskNames: (index: number) => _taskNames[index],
@@ -79,8 +77,6 @@ export const _mock = {
       `${CONFIG.assetsDir}/assets/images/mock/avatar/avatar-${index + 1}.webp`,
     travel: (index: number) =>
       `${CONFIG.assetsDir}/assets/images/mock/travel/travel-${index + 1}.webp`,
-    course: (index: number) =>
-      `${CONFIG.assetsDir}/assets/images/mock/course/course-${index + 1}.webp`,
     company: (index: number) =>
       `${CONFIG.assetsDir}/assets/images/mock/company/company-${index + 1}.webp`,
     product: (index: number) =>

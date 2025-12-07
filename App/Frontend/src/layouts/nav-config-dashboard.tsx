@@ -25,10 +25,8 @@ const ICONS = {
   label: icon('ic-label'),
   blank: icon('ic-blank'),
   folder: icon('ic-folder'),
-  course: icon('ic-course'),
   params: icon('ic-params'),
   banking: icon('ic-banking'),
-  booking: icon('ic-booking'),
   invoice: icon('ic-invoice'),
   product: icon('ic-product'),
   calendar: icon('ic-calendar'),
@@ -36,7 +34,6 @@ const ICONS = {
   external: icon('ic-external'),
   subpaths: icon('ic-subpaths'),
   menuItem: icon('ic-menu-item'),
-  ecommerce: icon('ic-ecommerce'),
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
 };
@@ -51,12 +48,9 @@ export const navData: NavSectionProps['data'] = [
     subheader: 'Overview',
     items: [
       { title: 'App', path: paths.dashboard.root, icon: ICONS.dashboard },
-      { title: 'Ecommerce', path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
       { title: 'Analytics', path: paths.dashboard.general.analytics, icon: ICONS.analytics },
       { title: 'Banking', path: paths.dashboard.general.banking, icon: ICONS.banking },
-      { title: 'Booking', path: paths.dashboard.general.booking, icon: ICONS.booking },
       { title: 'File', path: paths.dashboard.general.file, icon: ICONS.file },
-      { title: 'Course', path: paths.dashboard.general.course, icon: ICONS.course },
     ],
   },
   /**
