@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import type { IProductItem } from 'src/types/product';
+// import type { IProductItem } from 'src/types/product'; // Não é mais necessária
 
 import { CONFIG } from 'src/global-config';
-import axios, { endpoints } from 'src/lib/axios';
+// import axios, { endpoints } from 'src/lib/axios'; // Não são mais necessárias
 import { getProduct } from 'src/actions/product-ssr';
 
 import { ProductShopDetailsView } from 'src/sections/product/view';
@@ -28,21 +28,11 @@ export default async function Page({ params }: Props) {
 /**
  * Static Exports in Next.js
  *
- * 1. Set `isStaticExport = true` in `next.config.{mjs|ts}`.
- * 2. This allows `generateStaticParams()` to pre-render dynamic routes at build time.
- *
- * For more details, see:
- * https://nextjs.org/docs/app/building-your-application/deploying/static-exports
- *
- * NOTE: Remove all "generateStaticParams()" functions if not using static exports.
+ * CORREÇÃO PARA O DEPLOY (CLOUDFLARE PAGES):
+ * Retornamos um array vazio para o Next.js pular a geração estática
+ * desta rota no momento do build, evitando o erro de conexão/TypeError.
  */
 export async function generateStaticParams() {
-  const res = await axios.get(endpoints.product.list);
-  const data: IProductItem[] = CONFIG.isStaticExport
-    ? res.data.products
-    : res.data.products.slice(0, 1);
-
-  return data.map((product) => ({
-    id: product.id,
-  }));
+  // ✅ Retorna vazio para desabilitar a geração estática
+  return [];
 }
