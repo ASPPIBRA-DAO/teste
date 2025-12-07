@@ -22,11 +22,8 @@ const ICONS = {
   user: icon('ic-user'),
   file: icon('ic-file'),
   lock: icon('ic-lock'),
-  tour: icon('ic-tour'),
-  order: icon('ic-order'),
   label: icon('ic-label'),
   blank: icon('ic-blank'),
-  kanban: icon('ic-kanban'),
   folder: icon('ic-folder'),
   course: icon('ic-course'),
   params: icon('ic-params'),
@@ -46,21 +43,6 @@ const ICONS = {
 
 // ----------------------------------------------------------------------
 
-/**
- * Input nav data is an array of navigation section items used to define the structure and content of a navigation bar.
- * Each section contains a subheader and an array of items, which can include nested children items.
- *
- * Each item can have the following properties:
- * - `title`: The title of the navigation item.
- * - `path`: The URL path the item links to.
- * - `icon`: An optional icon component to display alongside the title.
- * - `info`: Optional additional information to display, such as a label.
- * - `allowedRoles`: An optional array of roles that are allowed to see the item.
- * - `caption`: An optional caption to display below the title.
- * - `children`: An optional array of nested navigation items.
- * - `disabled`: An optional boolean to disable the item.
- * - `deepMatch`: An optional boolean to indicate if the item should match subpaths.
- */
 export const navData: NavSectionProps['data'] = [
   /**
    * Overview
@@ -97,26 +79,6 @@ export const navData: NavSectionProps['data'] = [
         ],
       },
       {
-        title: 'Product',
-        path: paths.dashboard.product.root,
-        icon: ICONS.product,
-        children: [
-          { title: 'List', path: paths.dashboard.product.root },
-          { title: 'Details', path: paths.dashboard.product.demo.details },
-          { title: 'Create', path: paths.dashboard.product.new },
-          { title: 'Edit', path: paths.dashboard.product.demo.edit },
-        ],
-      },
-      {
-        title: 'Order',
-        path: paths.dashboard.order.root,
-        icon: ICONS.order,
-        children: [
-          { title: 'List', path: paths.dashboard.order.root },
-          { title: 'Details', path: paths.dashboard.order.demo.details },
-        ],
-      },
-      {
         title: 'Invoice',
         path: paths.dashboard.invoice.root,
         icon: ICONS.invoice,
@@ -138,28 +100,6 @@ export const navData: NavSectionProps['data'] = [
           { title: 'Edit', path: paths.dashboard.post.demo.edit },
         ],
       },
-      {
-        title: 'Job',
-        path: paths.dashboard.job.root,
-        icon: ICONS.job,
-        children: [
-          { title: 'List', path: paths.dashboard.job.root },
-          { title: 'Details', path: paths.dashboard.job.demo.details },
-          { title: 'Create', path: paths.dashboard.job.new },
-          { title: 'Edit', path: paths.dashboard.job.demo.edit },
-        ],
-      },
-      {
-        title: 'Tour',
-        path: paths.dashboard.tour.root,
-        icon: ICONS.tour,
-        children: [
-          { title: 'List', path: paths.dashboard.tour.root },
-          { title: 'Details', path: paths.dashboard.tour.demo.details },
-          { title: 'Create', path: paths.dashboard.tour.new },
-          { title: 'Edit', path: paths.dashboard.tour.demo.edit },
-        ],
-      },
       { title: 'File manager', path: paths.dashboard.fileManager, icon: ICONS.folder },
       {
         title: 'Mail',
@@ -173,7 +113,6 @@ export const navData: NavSectionProps['data'] = [
       },
       { title: 'Chat', path: paths.dashboard.chat, icon: ICONS.chat },
       { title: 'Calendar', path: paths.dashboard.calendar, icon: ICONS.calendar },
-      { title: 'Kanban', path: paths.dashboard.kanban, icon: ICONS.kanban },
     ],
   },
   /**
@@ -183,20 +122,6 @@ export const navData: NavSectionProps['data'] = [
     subheader: 'Misc',
     items: [
       {
-        /**
-         * Permissions can be set for each item by using the `allowedRoles` property.
-         * - If `allowedRoles` is not set (default), all roles can see the item.
-         * - If `allowedRoles` is an empty array `[]`, no one can see the item.
-         * - If `allowedRoles` contains specific roles, only those roles can see the item.
-         *
-         * Examples:
-         * - `allowedRoles: ['user']` - only users with the 'user' role can see this item.
-         * - `allowedRoles: ['admin']` - only users with the 'admin' role can see this item.
-         * - `allowedRoles: ['admin', 'manager']` - only users with the 'admin' or 'manager' roles can see this item.
-         *
-         * Combine with the `checkPermissions` prop to build conditional expressions.
-         * Example usage can be found in: src/sections/_examples/extra/navigation-bar-view/nav-vertical.{jsx | tsx}
-         */
         title: 'Permission',
         path: paths.dashboard.permission,
         icon: ICONS.lock,

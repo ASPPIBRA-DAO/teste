@@ -10,7 +10,6 @@ import { HomeFAQs } from '../home-faqs';
 import { HomeTeam } from '../home-team';
 import { HomeRoadmap } from '../home-roadmap';
 import { HomeEcosystem } from '../home-ecosystem';
-import { HomeCommunity } from '../home-community';
 import { HomeLatestNews } from '../home-latest-news';
 import { HomeIntegrations } from '../home-integrations';
 import { HomeFinalCTA } from '../home-final-cta';
@@ -36,8 +35,6 @@ export function HomeView() {
         <HomeEcosystem />
 
         <HomeIntegrations />
-
-        <HomeCommunity />
 
         <HomeTeam />
 

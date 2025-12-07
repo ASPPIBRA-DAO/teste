@@ -100,9 +100,6 @@ export const endpoints = {
 
   // --- RESTAURADOS DO MODELO OFICIAL (Híbrido) ---
 
-  // 🔧 CORREÇÃO: Kanban deve ser STRING nesta versão do template
-  kanban: '/api/kanban',
-
   // 🔧 CORREÇÃO: Calendar deve ser OBJETO
   calendar: {
     list: '/api/calendar/list',
