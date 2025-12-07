@@ -30,19 +30,23 @@ export default async function Page({ params }: Props) {
 /**
  * Static Exports in Next.js
  *
- * 1. Set `isStaticExport = true` in `next.config.{mjs|ts}`.
- * 2. This allows `generateStaticParams()` to pre-render dynamic routes at build time.
+ * CORREÇÃO PARA O DEPLOY (CLOUDFLARE PAGES):
+ * Alteramos esta função para retornar vazio [].
+ * Isso impede que o build tente conectar na API para listar todos os posts,
+ * o que causava erro 500/ECONNREFUSED durante o deploy.
  *
- * For more details, see:
- * https://nextjs.org/docs/app/building-your-application/deploying/static-exports
- *
- * NOTE: Remove all "generateStaticParams()" functions if not using static exports.
+ * As páginas serão geradas sob demanda quando o usuário acessar.
  */
 export async function generateStaticParams() {
+  // ✅ Retornar vazio faz o Next.js pular a geração estática desta rota no build
+  return [];
+
+  /* CÓDIGO ANTIGO (QUE QUEBRAVA O BUILD):
   const res = await axios.get(endpoints.post.list);
   const data: IPostItem[] = CONFIG.isStaticExport ? res.data.posts : res.data.posts.slice(0, 1);
 
   return data.map((post) => ({
     title: kebabCase(post.title),
   }));
+  */
 }

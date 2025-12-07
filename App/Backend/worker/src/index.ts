@@ -22,25 +22,30 @@ const app = new Hono<AppType>();
 
 // === MIDDLEWARES GLOBAIS ===
 
-// 1. Configuração de CORS
+// 1. Configuração de CORS (Atualizada para Produção e Desenvolvimento)
 app.use('/*', cors({
   origin: (origin) => {
     const allowedOrigins = [
-      'http://localhost:8082',       // Seu Frontend Next.js
-      'http://localhost:3000',
-      'http://127.0.0.1:8082',
-      'https://asppibra.com',
-      'https://www.asppibra.com'
+      'http://localhost:8082',       // Seu Frontend Local (Principal)
+      'http://localhost:3000',       // Frontend Padrão Next.js
+      'http://127.0.0.1:8082',       // Variação de IP Local
+      'https://asppibra.com',        // Frontend Produção
+      'https://www.asppibra.com',    // Frontend Produção (www)
+      'https://api.asppibra.com'     // A própria API (Self-request)
     ];
 
-    if (allowedOrigins.includes(origin) || (origin && origin.includes('cloudworkstations.dev'))) {
+    // Verifica se a origem exata está na lista
+    if (allowedOrigins.includes(origin)) {
       return origin;
     }
 
-    if (origin && origin.includes('localhost')) {
+    // Verifica ambientes de desenvolvimento dinâmicos (Cloudflare Workstations ou Localhost)
+    if (origin && (origin.includes('localhost') || origin.includes('cloudworkstations.dev'))) {
       return origin;
     }
 
+    // Fallback: Retorna a origem recebida para tentar evitar bloqueio em casos de borda,
+    // mas o navegador só aceitará se o backend retornar o header correto.
     return origin;
   },
   allowHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -68,7 +73,7 @@ app.get('/', (c) => {
   return success(c, {
     status: 'online',
     service: 'Governance System API',
-    version: '1.0.2',
+    version: '1.0.3', // Bump de versão
     cors_check: 'enabled'
   }, 'Sistema Operacional');
 });
@@ -91,15 +96,15 @@ app.get('/health-db', async (c) => {
   }
 });
 
-// === ROTAS DA APLICAÇÃO (CORRIGIDO) ===
+// === ROTAS DA APLICAÇÃO ===
 
 // 1. Montamos as rotas DIRETAMENTE na raiz
-// Isso faz com que http://localhost:8787/auth/sign-up funcione (que é o que o Front chama)
+// Isso faz com que https://api.asppibra.com/auth/sign-up funcione
 app.route('/users', userRoutes);
 app.route('/auth', authRoutes);
 app.route('/post', postRoutes);
 
-// 2. (Opcional) Mantemos compatibilidade com /api caso mude a config no futuro
+// 2. (Opcional) Mantemos compatibilidade com /api
 app.route('/api/users', userRoutes);
 app.route('/api/auth', authRoutes);
 app.route('/api/post', postRoutes);
