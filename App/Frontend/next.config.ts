@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next';
+import path from 'path';
 
 // ----------------------------------------------------------------------
 
@@ -30,6 +31,13 @@ const nextConfig: NextConfig = {
   env: {
     BUILD_STATIC_EXPORT: JSON.stringify(isStaticExport),
   },
+
+  // ✅ CORREÇÃO 1: MOVENDO outputFileTracingRoot para a raiz do objeto de configuração
+  // (Para resolver o aviso do Next.js sobre a mudança de propriedade no v15.5.7)
+  outputFileTracingRoot: path.join(__dirname, '../../'),
+
+  // Deixando 'experimental' vazio ou removendo-o, já que movemos a propriedade
+  experimental: {},
 
   // ------------------------------------------------------------------
   // allowedDevOrigins

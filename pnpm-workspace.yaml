@@ -1,0 +1,4 @@
+packages:
+  - 'App/Backend'
+  - 'App/Frontend'
+  - 'App/Backend/worker'
