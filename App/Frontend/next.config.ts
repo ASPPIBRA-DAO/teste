@@ -32,11 +32,10 @@ const nextConfig: NextConfig = {
     BUILD_STATIC_EXPORT: JSON.stringify(isStaticExport),
   },
 
-  // ✅ CORREÇÃO 1: MOVENDO outputFileTracingRoot para a raiz do objeto de configuração
-  // (Para resolver o aviso do Next.js sobre a mudança de propriedade no v15.5.7)
+  // ✅ CORREÇÃO 1: Mantendo outputFileTracingRoot na raiz
   outputFileTracingRoot: path.join(__dirname, '../../'),
 
-  // Deixando 'experimental' vazio ou removendo-o, já que movemos a propriedade
+  // Deixando 'experimental' vazio
   experimental: {},
 
   // ------------------------------------------------------------------
@@ -68,6 +67,12 @@ const nextConfig: NextConfig = {
   // Webpack
   // ------------------------------------------------------------------
   webpack(config) {
+    // 👇 SOLUÇÃO FORÇADA: Adiciona o alias 'src' diretamente ao Webpack
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      'src': path.join(__dirname, 'src'), // Mapeia 'src' para o caminho real: App/Frontend/src
+    };
+    
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
