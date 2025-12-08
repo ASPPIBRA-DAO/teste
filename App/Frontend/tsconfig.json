@@ -7,7 +7,7 @@
     "allowJs": true,
     "resolveJsonModule": true,
     
-    // 👇 ADICIONE ESTA PROPRIEDADE PARA RESOLVER OS ALIASES
+    // 👇 ESTA PROPRIEDADE ESTÁ CORRETA E RESOLVE O PROBLEMA
     "paths": {
       "src/*": ["./src/*"]
     },
