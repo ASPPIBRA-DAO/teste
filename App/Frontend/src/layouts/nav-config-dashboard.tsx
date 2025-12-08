@@ -25,14 +25,12 @@ const ICONS = {
   label: icon('ic-label'),
   blank: icon('ic-blank'),
   folder: icon('ic-folder'),
-  params: icon('ic-params'),
   banking: icon('ic-banking'),
   invoice: icon('ic-invoice'),
   product: icon('ic-product'),
   calendar: icon('ic-calendar'),
   disabled: icon('ic-disabled'),
   external: icon('ic-external'),
-  subpaths: icon('ic-subpaths'),
   menuItem: icon('ic-menu-item'),
   analytics: icon('ic-analytics'),
   dashboard: icon('ic-dashboard'),
@@ -177,17 +175,6 @@ export const navData: NavSectionProps['data'] = [
         icon: ICONS.menuItem,
         caption:
           'Quisque malesuada placerat nisl. In hac habitasse platea dictumst. Cras id dui. Pellentesque commodo eros a enim. Morbi mollis tellus ac sapien.',
-      },
-      {
-        title: 'Params',
-        path: '/dashboard/params?id=e99f09a7-dd88-49d5-b1c8-1daf80c2d7b1',
-        icon: ICONS.params,
-      },
-      {
-        title: 'Subpaths',
-        path: '/dashboard/subpaths',
-        icon: ICONS.subpaths,
-        deepMatch: true,
       },
       {
         title: 'External link',
