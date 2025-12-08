@@ -32,7 +32,7 @@ const nextConfig: NextConfig = {
     BUILD_STATIC_EXPORT: JSON.stringify(isStaticExport),
   },
 
-  // ✅ CORREÇÃO 1: Mantendo outputFileTracingRoot na raiz
+  // ✅ Mantendo outputFileTracingRoot na raiz
   outputFileTracingRoot: path.join(__dirname, '../../'),
 
   // Deixando 'experimental' vazio
@@ -67,10 +67,11 @@ const nextConfig: NextConfig = {
   // Webpack
   // ------------------------------------------------------------------
   webpack(config) {
-    // 👇 SOLUÇÃO FORÇADA: Adiciona o alias 'src' diretamente ao Webpack
+    // ⚠️ SOLUÇÃO FINAL: Mapeia o alias '@' no Webpack para evitar conflito com 'src'
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
-      'src': path.join(__dirname, 'src'), // Mapeia 'src' para o caminho real: App/Frontend/src
+      '@': path.join(__dirname, 'src'), // Mapeia '@/' para o caminho real: App/Frontend/src
+      // Remova a linha 'src': path.join(__dirname, 'src') se ainda estiver aqui.
     };
     
     config.module.rules.push({

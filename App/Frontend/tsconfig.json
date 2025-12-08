@@ -1,3 +1,5 @@
+// App/Frontend/tsconfig.json
+
 {
   "compilerOptions": {
     /* Bundler */
@@ -7,9 +9,9 @@
     "allowJs": true,
     "resolveJsonModule": true,
     
-    // 👇 ESTA PROPRIEDADE ESTÁ CORRETA E RESOLVE O PROBLEMA
+    // ✅ ALIAS ATUALIZADO para evitar conflito com o Webpack/Monorepo
     "paths": {
-      "src/*": ["./src/*"]
+      "@/*": ["./src/*"] 
     },
 
     /* Build */
