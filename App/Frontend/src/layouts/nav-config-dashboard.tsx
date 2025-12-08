@@ -23,7 +23,6 @@ const ICONS = {
   file: icon('ic-file'),
   lock: icon('ic-lock'),
   label: icon('ic-label'),
-  blank: icon('ic-blank'),
   folder: icon('ic-folder'),
   banking: icon('ic-banking'),
   invoice: icon('ic-invoice'),
@@ -105,84 +104,6 @@ export const navData: NavSectionProps['data'] = [
       },
       { title: 'Chat', path: paths.dashboard.chat, icon: ICONS.chat },
       { title: 'Calendar', path: paths.dashboard.calendar, icon: ICONS.calendar },
-    ],
-  },
-  /**
-   * Item state
-   */
-  {
-    subheader: 'Misc',
-    items: [
-      {
-        title: 'Permission',
-        path: paths.dashboard.permission,
-        icon: ICONS.lock,
-        allowedRoles: ['admin', 'manager'],
-        caption: 'Only admin can see this item.',
-      },
-      {
-        title: 'Level',
-        path: '#/dashboard/menu-level',
-        icon: ICONS.menuItem,
-        children: [
-          {
-            title: 'Level 1a',
-            path: '#/dashboard/menu-level/1a',
-            children: [
-              { title: 'Level 2a', path: '#/dashboard/menu-level/1a/2a' },
-              {
-                title: 'Level 2b',
-                path: '#/dashboard/menu-level/1a/2b',
-                children: [
-                  {
-                    title: 'Level 3a',
-                    path: '#/dashboard/menu-level/1a/2b/3a',
-                  },
-                  {
-                    title: 'Level 3b',
-                    path: '#/dashboard/menu-level/1a/2b/3b',
-                  },
-                ],
-              },
-            ],
-          },
-          { title: 'Level 1b', path: '#/dashboard/menu-level/1b' },
-        ],
-      },
-      {
-        title: 'Disabled',
-        path: '#disabled',
-        icon: ICONS.disabled,
-        disabled: true,
-      },
-      {
-        title: 'Label',
-        path: '#label',
-        icon: ICONS.label,
-        info: (
-          <Label
-            color="info"
-            variant="inverted"
-            startIcon={<Iconify icon="solar:bell-bing-bold-duotone" />}
-          >
-            NEW
-          </Label>
-        ),
-      },
-      {
-        title: 'Caption',
-        path: '#caption',
-        icon: ICONS.menuItem,
-        caption:
-          'Quisque malesuada placerat nisl. In hac habitasse platea dictumst. Cras id dui. Pellentesque commodo eros a enim. Morbi mollis tellus ac sapien.',
-      },
-      {
-        title: 'External link',
-        path: 'https://www.google.com/',
-        icon: ICONS.external,
-        info: <Iconify width={18} icon="eva:external-link-fill" />,
-      },
-      { title: 'Blank', path: paths.dashboard.blank, icon: ICONS.blank },
     ],
   },
 ];

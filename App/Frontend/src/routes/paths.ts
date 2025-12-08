@@ -73,10 +73,8 @@ export const paths = {
     root: ROOTS.DASHBOARD,
     mail: `${ROOTS.DASHBOARD}/mail`,
     chat: `${ROOTS.DASHBOARD}/chat`,
-    blank: `${ROOTS.DASHBOARD}/blank`,
     calendar: `${ROOTS.DASHBOARD}/calendar`,
     fileManager: `${ROOTS.DASHBOARD}/file-manager`,
-    permission: `${ROOTS.DASHBOARD}/permission`,
     general: {
       app: `${ROOTS.DASHBOARD}/app`,
       analytics: `${ROOTS.DASHBOARD}/analytics`,
