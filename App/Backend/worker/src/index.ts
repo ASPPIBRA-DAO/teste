@@ -19,7 +19,7 @@ type AppType = {
 
 const app = new Hono<AppType>();
 
-// --- 1. Configuração de CORS ---
+// --- 1. Configuração de CORS (Sem Alterações) ---
 app.use('/*', cors({
   origin: (origin) => {
     const allowedOrigins = [
@@ -37,7 +37,7 @@ app.use('/*', cors({
   credentials: true,
 }));
 
-// --- 2. Middleware de Banco de Dados ---
+// --- 2. Middleware de Banco de Dados (Sem Alterações) ---
 app.use(async (c, next) => {
   try {
     const db = createDb(c.env.DB);
@@ -48,7 +48,7 @@ app.use(async (c, next) => {
   }
 });
 
-// --- 3. ROTA DE DADOS: Monitoramento ---
+// --- 3. ROTA DE DADOS: Monitoramento (Sem Alterações) ---
 app.get('/monitoring', async (c) => {
   const accountId = c.env.CLOUDFLARE_ACCOUNT_ID;
   const zoneId = c.env.CLOUDFLARE_ZONE_ID;
@@ -98,7 +98,7 @@ app.get('/monitoring', async (c) => {
   }
 });
 
-// --- 4. ROTA VISUAL: Dashboard HTML ---
+// --- 4. ROTA VISUAL: Dashboard HTML (Atualizado com Light/Dark) ---
 app.get('/', (c) => {
   const statusInfo = {
     status: "Operational",
@@ -116,62 +116,136 @@ app.get('/', (c) => {
       <title>ASPPIBRA | API Status</title>
       <link rel="icon" type="image/x-icon" href="/favicon.ico">
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+      
       <style>
+        /* Variáveis Comuns */
         :root { 
-          --primary-glow: #4ade80;
-          --glass-bg: rgba(255, 255, 255, 0.05);
-          --glass-border: rgba(255, 255, 255, 0.1);
-          --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-          --text-main: #ffffff;
-          --text-muted: #94a3b8;
+          --primary-glow: #F56040; 
+          --accent-blue: #00FFFF;
         }
 
+        /* Variáveis do Tema Dark (Padrão) */
+        .theme-dark {
+          /* Cores de Fundo */
+          --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%);
+          --bg-card: rgba(255, 255, 255, 0.05);
+          --bg-card-header: rgba(0, 0, 0, 0.2);
+          
+          /* Cores de Texto e Borda */
+          --text-main: #ffffff;
+          --text-muted: #94a3b8;
+          --border-main: rgba(255, 255, 255, 0.1);
+          
+          /* Efeito Glassmorphism (Sombra e Blur) */
+          --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+          --card-blur: blur(12px);
+          
+          /* Destaques */
+          --status-bg: rgba(0, 255, 255, 0.1);
+          --status-glow: #00FFFF;
+          --pos-change: var(--primary-glow); /* Laranja */
+          --neg-change: #f87171; /* Vermelho Suave */
+        }
+
+        /* Variáveis do Tema Light */
+        .theme-light {
+          /* Cores de Fundo */
+          --bg-main: #F4F7FC; /* Cinza muito claro */
+          --bg-card: #FFFFFF;
+          --bg-card-header: #FFFFFF;
+          
+          /* Cores de Texto e Borda */
+          --text-main: #1C2A3A;
+          --text-muted: #6B7A90;
+          --border-main: #E0E0E0; /* Borda cinza clara */
+          
+          /* Efeito Sutil (Limpo e Suave) */
+          --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+          --card-blur: none;
+          
+          /* Destaques */
+          --status-bg: rgba(0, 150, 136, 0.1); /* Verde Água Claro */
+          --status-glow: #009688;
+          --pos-change: #3BB579; /* Verde Suave */
+          --neg-change: #E04F5F; /* Vermelho Suave */
+        }
+        
+        /* Aplicação de Estilos Baseados no Tema */
         body { 
           font-family: 'Inter', sans-serif; 
-          background: radial-gradient(circle at 10% 20%, #0f3618 0%, #020617 90%);
+          background: var(--bg-main);
           background-attachment: fixed;
           color: var(--text-main); 
           display: flex; flex-direction: column; min-height: 100vh; margin: 0; 
+          transition: background-color 0.5s, color 0.5s;
         }
 
         .glass-panel {
-          background: var(--glass-bg);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
-          border: 1px solid var(--glass-border);
-          box-shadow: var(--glass-shadow);
+          background: var(--bg-card);
+          backdrop-filter: var(--card-blur);
+          -webkit-backdrop-filter: var(--card-blur);
+          border: 1px solid var(--border-main);
+          box-shadow: var(--card-shadow);
           border-radius: 20px;
+          transition: all 0.3s;
         }
 
         header { 
-          background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px);
-          border-bottom: 1px solid var(--glass-border);
+          background: var(--bg-card-header); 
+          backdrop-filter: var(--card-blur);
+          border-bottom: 1px solid var(--border-main);
           padding: 1rem 0; width: 100%; z-index: 1000; position: sticky; top: 0;
         }
         header h1 { margin: 0; font-weight: 300; letter-spacing: 1px; font-size: 1.2rem; opacity: 0.9; text-align: center; }
+
+        /* Estilo do Botão de Alternância (Novo) */
+        #theme-toggle {
+            position: absolute; top: 1rem; right: 2rem;
+            background: var(--bg-card); color: var(--text-main);
+            border: 1px solid var(--border-main); border-radius: 50%;
+            width: 40px; height: 40px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: background 0.3s, color 0.3s;
+            z-index: 1001;
+        }
+        #theme-toggle:hover {
+            box-shadow: var(--card-shadow);
+        }
 
         main { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; box-sizing: border-box; }
         .main-container { width: 100%; max-width: 1100px; }
         
         .welcome-card { 
-          background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(0,0,0,0) 100%);
-          border: 1px solid rgba(34, 197, 94, 0.3);
+          background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,255,255,0) 100%);
+          border: 1px solid var(--border-main);
           padding: 2.5rem; border-radius: 24px; margin-bottom: 2.5rem; position: relative; overflow: hidden;
         }
         .welcome-card::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(74, 222, 128, 0.1) 0%, transparent 60%); z-index: -1;
+            background: radial-gradient(circle, var(--status-bg) 0%, transparent 60%); z-index: -1;
         }
-        .welcome-card h2 { margin: 0; font-size: 2rem; font-weight: 700; background: linear-gradient(to right, #fff, #a7f3d0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
+        .welcome-card h2 { 
+            margin: 0; font-size: 2rem; font-weight: 700; 
+            /* Gradiente Light/Dark compatível */
+            background: linear-gradient(to right, var(--text-main), var(--status-glow)); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        } 
         .welcome-card p { margin-top: 0.8rem; color: var(--text-muted); font-size: 1rem; }
         
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
         .summary-card { padding: 1.8rem; transition: transform 0.2s ease, border-color 0.2s; }
-        .summary-card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.3); }
+        .summary-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
         .summary-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px; } 
-        .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: #fff; text-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
-        .summary-card .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; background: rgba(255,255,255,0.05); }
-        .change.positive { color: #4ade80; } .change.negative { color: #f87171; }
+        .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: var(--text-main); }
+        .summary-card .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.05); }
+        
+        /* Cor de Mudança Positiva/Negativa */
+        .theme-light .change { background: rgba(0,0,0,0.05); }
+        .theme-dark .change { background: rgba(255,255,255,0.05); }
+        
+        .change.positive { color: var(--pos-change); } 
+        .change.negative { color: var(--neg-change); }
 
         .tech-dashboard { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
         
@@ -179,64 +253,76 @@ app.get('/', (c) => {
         .governance-card { 
           padding: 3rem; text-align: center; height: 100%; box-sizing: border-box; 
           display: flex; flex-direction: column; justify-content: center; 
-          background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+          background: linear-gradient(180deg, var(--bg-card) 0%, rgba(255,255,255,0) 100%);
         }
         .logo-container {
             width: 100px; height: 100px; margin: 0 auto 1.5rem;
-            background: rgba(255,255,255,0.05); border-radius: 50%;
+            background: var(--bg-card); border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 0 30px rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--border-main); 
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
         }
         .logo-img { width: 60px; height: 60px; object-fit: contain; }
         
         .status-badge { 
           display: inline-flex; align-items: center; gap: 8px; 
-          background: rgba(34, 197, 94, 0.15); color: #4ade80; 
+          background: var(--status-bg); 
+          color: var(--status-glow); 
           padding: 8px 20px; border-radius: 99px; font-weight: 600; font-size: 0.9rem; margin: 1.5rem auto; 
-          border: 1px solid rgba(34, 197, 94, 0.3); box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+          border: 1px solid rgba(0, 0, 0, 0.1); 
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
         }
-        .dot { width: 8px; height: 8px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 8px #4ade80; }
+        .dot { 
+          width: 8px; height: 8px; 
+          background: var(--status-glow); 
+          border-radius: 50%; 
+          box-shadow: 0 0 8px var(--status-glow); 
+        }
         
         .sys-details { 
-          background: rgba(0,0,0,0.2); border-radius: 12px; padding: 1.2rem; 
+          background: var(--bg-card-header); border-radius: 12px; padding: 1.2rem; 
           text-align: left; font-size: 0.9rem; margin-top: auto; 
-          border: 1px solid rgba(255,255,255,0.05);
+          border: 1px solid var(--border-main);
         }
-        .sys-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); }
+        .sys-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-main); color: var(--text-muted); }
         .sys-row:last-child { border-bottom: none; }
-        .sys-val { color: #fff; font-family: monospace; }
+        .sys-val { color: var(--text-main); font-family: monospace; }
 
         .col-infra { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
         
         .db-metrics-row { display: flex; gap: 24px; }
         .metric-card { flex: 1; padding: 1.5rem; position: relative; overflow: hidden; }
         .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-        .metric-value { font-size: 2rem; font-weight: 700; color: #fff; margin: 0; }
+        .metric-value { font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 0; }
         
-        .metric-bar { height: 6px; width: 100%; background: rgba(255,255,255,0.1); margin-top: 15px; border-radius: 3px; }
+        .metric-bar { height: 6px; width: 100%; background: var(--border-main); margin-top: 15px; border-radius: 3px; }
         .bar-fill { height: 100%; border-radius: 3px; position: relative; }
-        .bar-fill.green { background: #4ade80; box-shadow: 0 0 10px rgba(74, 222, 128, 0.5); }
+        .bar-fill.green { background: var(--status-glow); box-shadow: 0 0 10px var(--status-glow); }
         .bar-fill.blue { background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
 
         .countries-card { padding: 1.5rem; flex-grow: 1; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-main); }
         .country-list { list-style: none; padding: 0; margin: 0; }
         .country-item { 
             display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); 
-            color: #e2e8f0; font-size: 0.95rem;
+            padding: 12px 10px; border-bottom: 1px solid var(--border-main); 
+            color: var(--text-main); font-size: 0.95rem;
             transition: background 0.2s; border-radius: 8px;
         }
-        .country-item:hover { background: rgba(255,255,255,0.05); }
+        .country-item:hover { background: rgba(0,0,0,0.05); }
+        .theme-dark .country-item:hover { background: rgba(255,255,255,0.05); }
         
         footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; background: transparent; padding: 2rem; text-align: center; }
 
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
         .loading { animation: pulse 1.5s infinite; color: var(--text-muted); }
       </style>
-    </head>
-    <body>
-      <header><h1>ASPPIBRA DAO</h1></header>
+      </head>
+    <body class="theme-dark"> 
+      <header>
+        <button id="theme-toggle" title="Alternar Tema">🌙</button>
+        <h1>ASPPIBRA DAO</h1>
+      </header>
 
       <main>
         <div class="main-container">
@@ -271,7 +357,7 @@ app.get('/', (c) => {
                 <div class="logo-container">
                     <img src="/android-chrome-192x192.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
                 </div>
-                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: #fff;">Governance System</h2>
+                <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Governance System</h2>
                 <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">API Backend & DAO Services</p>
                 
                 <div class="status-badge">
@@ -304,8 +390,8 @@ app.get('/', (c) => {
 
               <div class="countries-card glass-panel">
                 <div class="card-header">
-                  <h4 style="margin:0; font-weight:600;">🌍 Top Traffic Origin</h4>
-                  <span style="font-size: 0.7rem; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 4px; color: #cbd5e1;">Live</span>
+                  <h4 style="margin:0; font-weight:600; color: var(--text-main);">🌍 Top Traffic Origin</h4>
+                  <span style="font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 4px 10px; border-radius: 4px; color: var(--text-muted);">Live</span>
                 </div>
                 <ul class="country-list" id="list-countries">
                    <li class="country-item"><span class="loading">Scanning network...</span></li>
@@ -321,6 +407,46 @@ app.get('/', (c) => {
       <footer><p>Powered by ASPPIBRA DAO • Secured by Cloudflare</p></footer>
 
       <script>
+        // --- FUNÇÕES DE TEMA ---
+        const toggleButton = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // 1. Aplica o tema salvo ou o padrão do sistema
+        function applyTheme(theme) {
+            body.className = '';
+            body.classList.add('theme-' + theme);
+            toggleButton.innerText = theme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', theme);
+        }
+
+        // 2. Alterna entre Light e Dark
+        function toggleTheme() {
+            const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        }
+
+        // 3. Inicializa o tema ao carregar
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else if (prefersDark) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light'); // Padrão se não houver preferência/salvo
+            }
+        }
+
+        // Event listener para o botão de alternância
+        toggleButton.addEventListener('click', toggleTheme);
+
+        // Inicializa o tema
+        initTheme();
+
+        // --- FUNÇÕES DE MÉTRICAS (Sem Alterações) ---
         async function fetchMetrics() {
           const lblReads = document.getElementById('lbl-reads');
           const lblWrites = document.getElementById('lbl-writes');
@@ -330,7 +456,6 @@ app.get('/', (c) => {
             console.log("Fetching metrics...");
             const response = await fetch('/monitoring');
             
-            // Verificação de erro HTTP
             if (!response.ok) {
                 throw new Error(\`HTTP error! status: \${response.status}\`);
             }
@@ -370,18 +495,17 @@ app.get('/', (c) => {
                             <img src="\${flagUrl}" style="width:20px; height:20px; object-fit:contain; filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));" onerror="this.style.display='none'">
                             <span style="font-weight:500;">\${code}</span>
                         </div>
-                        <span style="font-weight:700; color: #fff;">\${country.count}</span>
+                        <span style="font-weight:700; color: var(--text-main); ">\${country.count}</span>
                     \`;
                     listCountries.appendChild(li);
                 });
             } else {
-                listCountries.innerHTML = '<li class="country-item" style="justify-content:center; color: #64748b;">No recent traffic</li>';
+                listCountries.innerHTML = '<li class="country-item" style="justify-content:center; color: var(--text-muted);">No recent traffic</li>';
             }
 
           } catch (e) {
             console.error('Error loading metrics', e);
-            // FEEDBACK VISUAL DO ERRO
-            listCountries.innerHTML = '<li class="country-item" style="color: #f87171;">Connection Failed</li>';
+            listCountries.innerHTML = '<li class="country-item" style="color: var(--neg-change);">Connection Failed</li>';
             lblReads.innerText = "Err";
             lblWrites.innerText = "Err";
           }
