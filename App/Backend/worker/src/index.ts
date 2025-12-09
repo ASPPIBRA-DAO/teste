@@ -54,31 +54,30 @@ app.get('/monitoring', async (c) => {
   const zoneId = c.env.CLOUDFLARE_ZONE_ID;
   const apiToken = c.env.CLOUDFLARE_API_TOKEN;
 
-  const today = new Date().toISOString().split('T')[0];
+  // Calculate 24h ago
+  const startDateTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const query = `
     query {
       viewer {
         accounts(filter: { accountTag: "${accountId}" }) {
-          d1AnalyticsAdaptiveGroups(limit: 1, filter: { date_geq: "${today}" }) {
+          d1AnalyticsAdaptiveGroups(limit: 1, filter: { datetime_geq: "${startDateTime}" }) {
             sum { readQueries, writeQueries }
           }
         }
         zones(filter: { zoneTag: "${zoneId}" }) {
-          # 🆕 Adiciona busca por Requisições e Visitantes Únicos (httpRequests1mGroups)
-          httpRequests1mGroups(
-            limit: 2, 
-            filter: { date_geq: "${today}" }
+          # Aggregate traffic stats for the last 24h
+          traffic: httpRequestsAdaptiveGroups(
+            limit: 1,
+            filter: { datetime_geq: "${startDateTime}" }
           ) {
+            count
             sum { 
-              requests 
-              viewer { 
-                unique 
-              }
+              visits
             }
           }
-          # Dados de Origem (Países)
-          httpRequestsAdaptiveGroups(limit: 5, filter: { date_geq: "${today}" }, orderBy: [count_DESC]) {
+          # Top Countries
+          countries: httpRequestsAdaptiveGroups(limit: 5, filter: { datetime_geq: "${startDateTime}" }, orderBy: [count_DESC]) {
             count
             dimensions { clientCountryName }
           }
@@ -96,17 +95,27 @@ app.get('/monitoring', async (c) => {
 
     const cfData: any = await cfResponse.json();
 
-    const dbMetrics = cfData?.data?.viewer?.accounts?.[0]?.d1AnalyticsAdaptiveGroups?.[0]?.sum || { readQueries: 0, writeQueries: 0 };
-    const rawCountries = cfData?.data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups || [];
-    // 🆕 Extrai as novas métricas de tráfego
-    const trafficMetrics = cfData?.data?.viewer?.zones?.[0]?.httpRequests1mGroups?.[0]?.sum || { requests: 0, viewer: { unique: 0 } };
+    if (cfData.errors) {
+      console.error("GraphQL Errors:", JSON.stringify(cfData.errors));
+    }
 
+    const dbMetrics = cfData?.data?.viewer?.accounts?.[0]?.d1AnalyticsAdaptiveGroups?.[0]?.sum || { readQueries: 0, writeQueries: 0 };
+
+    // Parse Traffic
+    const trafficNode = cfData?.data?.viewer?.zones?.[0]?.traffic?.[0];
+    const trafficMetrics = {
+        requests: trafficNode?.count || 0,
+        viewer: { unique: trafficNode?.sum?.visits || 0 }
+    };
+
+    // Parse Countries
+    const rawCountries = cfData?.data?.viewer?.zones?.[0]?.countries || [];
     const countries = rawCountries.map((item: any) => ({
       code: item.dimensions.clientCountryName,
       count: item.count
     }));
 
-    // 🆕 Retorna 'traffic' no JSON
+    // Return 'traffic' in JSON
     return c.json({ db: dbMetrics, countries, traffic: trafficMetrics });
   } catch (e) {
     console.error("Monitoring Error:", e);
