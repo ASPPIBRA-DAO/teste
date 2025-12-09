@@ -48,7 +48,7 @@ app.use(async (c, next) => {
   }
 });
 
-// --- 3. ROTA DE DADOS: Monitoramento (Sem Alterações) ---
+// --- 3. ROTA DE DADOS: Monitoramento (ATUALIZADO) ---
 app.get('/monitoring', async (c) => {
   const accountId = c.env.CLOUDFLARE_ACCOUNT_ID;
   const zoneId = c.env.CLOUDFLARE_ZONE_ID;
@@ -65,6 +65,19 @@ app.get('/monitoring', async (c) => {
           }
         }
         zones(filter: { zoneTag: "${zoneId}" }) {
+          # 🆕 Adiciona busca por Requisições e Visitantes Únicos (httpRequests1mGroups)
+          httpRequests1mGroups(
+            limit: 2, 
+            filter: { date_geq: "${today}" }
+          ) {
+            sum { 
+              requests 
+              viewer { 
+                unique 
+              }
+            }
+          }
+          # Dados de Origem (Países)
           httpRequestsAdaptiveGroups(limit: 5, filter: { date_geq: "${today}" }, orderBy: [count_DESC]) {
             count
             dimensions { clientCountryName }
@@ -85,20 +98,23 @@ app.get('/monitoring', async (c) => {
 
     const dbMetrics = cfData?.data?.viewer?.accounts?.[0]?.d1AnalyticsAdaptiveGroups?.[0]?.sum || { readQueries: 0, writeQueries: 0 };
     const rawCountries = cfData?.data?.viewer?.zones?.[0]?.httpRequestsAdaptiveGroups || [];
+    // 🆕 Extrai as novas métricas de tráfego
+    const trafficMetrics = cfData?.data?.viewer?.zones?.[0]?.httpRequests1mGroups?.[0]?.sum || { requests: 0, viewer: { unique: 0 } };
 
     const countries = rawCountries.map((item: any) => ({
       code: item.dimensions.clientCountryName,
       count: item.count
     }));
 
-    return c.json({ db: dbMetrics, countries });
+    // 🆕 Retorna 'traffic' no JSON
+    return c.json({ db: dbMetrics, countries, traffic: trafficMetrics });
   } catch (e) {
     console.error("Monitoring Error:", e);
     return c.json({ error: 'Failed to fetch metrics' }, 500);
   }
 });
 
-// --- 4. ROTA VISUAL: Dashboard HTML (Atualizado com Light/Dark) ---
+// --- 4. ROTA VISUAL: Dashboard HTML (ATUALIZADO) ---
 app.get('/', (c) => {
   const statusInfo = {
     status: "Operational",
@@ -334,19 +350,19 @@ app.get('/', (c) => {
 
           <div class="summary-grid">
             <div class="summary-card glass-panel">
-              <h3>Total active users</h3>
-              <p class="value">18,765</p>
-              <div class="change positive">▲ +2.6% last 7 days</div>
+              <h3>Total de Solicitações (24h)</h3>
+              <p class="value" id="lbl-total-requests"><span class="loading">--</span></p>
+              <div class="change positive">Monitorando...</div>
             </div>
             <div class="summary-card glass-panel">
-              <h3>Total installed</h3>
-              <p class="value">4,876</p>
-              <div class="change positive">▲ +0.2% last 7 days</div>
+              <h3>Visitantes Únicos (24h)</h3>
+              <p class="value" id="lbl-unique-visitors"><span class="loading">--</span></p>
+              <div class="change positive">Monitorando...</div>
             </div>
             <div class="summary-card glass-panel">
-              <h3>Total downloads</h3>
-              <p class="value">678</p>
-              <div class="change negative">▼ -0.1% last 7 days</div>
+              <h3>DB Writes (24h)</h3>
+              <p class="value" id="lbl-summary-writes"><span class="loading">--</span></p>
+              <div class="change positive">DB Workload</div>
             </div>
           </div>
 
@@ -446,11 +462,17 @@ app.get('/', (c) => {
         // Inicializa o tema
         initTheme();
 
-        // --- FUNÇÕES DE MÉTRICAS (Sem Alterações) ---
+        // --- FUNÇÕES DE MÉTRICAS (ATUALIZADAS) ---
         async function fetchMetrics() {
           const lblReads = document.getElementById('lbl-reads');
           const lblWrites = document.getElementById('lbl-writes');
           const listCountries = document.getElementById('list-countries');
+          
+          // 🆕 Novas Referências dos cards de Tráfego
+          const lblTotalRequests = document.getElementById('lbl-total-requests');
+          const lblUniqueVisitors = document.getElementById('lbl-unique-visitors');
+          const lblSummaryWrites = document.getElementById('lbl-summary-writes');
+
 
           try {
             console.log("Fetching metrics...");
@@ -462,6 +484,18 @@ app.get('/', (c) => {
 
             const data = await response.json();
             
+            // 🆕 Atualiza Métricas de Tráfego
+            if (data.traffic) {
+                const totalRequests = data.traffic.requests || 0;
+                const uniqueVisitors = data.traffic.viewer.unique || 0;
+
+                lblTotalRequests.innerText = totalRequests.toLocaleString();
+                lblUniqueVisitors.innerText = uniqueVisitors.toLocaleString();
+            } else {
+                lblTotalRequests.innerText = "N/A";
+                lblUniqueVisitors.innerText = "N/A";
+            }
+            
             // Atualiza DB Metrics
             if(data.db) {
                 const reads = data.db.readQueries || 0;
@@ -469,7 +503,9 @@ app.get('/', (c) => {
                 
                 lblReads.innerText = reads.toLocaleString();
                 lblWrites.innerText = writes.toLocaleString();
-                
+                // 🆕 Atualiza o terceiro card do topo com DB Writes
+                lblSummaryWrites.innerText = writes.toLocaleString();
+
                 const readWidth = Math.min(100, Math.max(5, (reads / 500) * 100)); 
                 const writeWidth = Math.min(100, Math.max(5, (writes / 100) * 100)); 
                 
@@ -478,6 +514,7 @@ app.get('/', (c) => {
             } else {
                 lblReads.innerText = "N/A";
                 lblWrites.innerText = "N/A";
+                lblSummaryWrites.innerText = "N/A";
             }
 
             // Atualiza Lista de Países
@@ -508,6 +545,10 @@ app.get('/', (c) => {
             listCountries.innerHTML = '<li class="country-item" style="color: var(--neg-change);">Connection Failed</li>';
             lblReads.innerText = "Err";
             lblWrites.innerText = "Err";
+            // 🆕 Atualiza novos campos em caso de erro
+            lblTotalRequests.innerText = "Err";
+            lblUniqueVisitors.innerText = "Err";
+            lblSummaryWrites.innerText = "Err";
           }
         }
         
