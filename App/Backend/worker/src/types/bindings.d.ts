@@ -6,4 +6,9 @@ export type Bindings = {
 
   // Conecta com o "r2_buckets" do wrangler.jsonc
   ASSETS: R2Bucket;
+
+  // Adiciona as variáveis de ambiente do Cloudflare
+  CLOUDFLARE_ACCOUNT_ID: string;
+  CLOUDFLARE_ZONE_ID: string;
+  CLOUDFLARE_API_TOKEN: string;
 };
