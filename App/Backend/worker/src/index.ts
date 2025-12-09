@@ -372,7 +372,7 @@ app.get('/', (c) => {
                         </div>
                         <span style="font-weight:700; color: #fff;">\${country.count}</span>
                     \`;
-                    list.appendChild(li);
+                    listCountries.appendChild(li);
                 });
             } else {
                 listCountries.innerHTML = '<li class="country-item" style="justify-content:center; color: #64748b;">No recent traffic</li>';
