@@ -1,13 +1,22 @@
-import { D1Database, R2Bucket } from "@cloudflare/workers-types";
+import { D1Database, R2Bucket, Fetcher } from "@cloudflare/workers-types";
 
 export type Bindings = {
-  // Conecta com o "d1_databases" do wrangler.jsonc
+  // 1. Banco de Dados (D1)
   DB: D1Database;
 
-  // Conecta com o "r2_buckets" do wrangler.jsonc
-  ASSETS: R2Bucket;
+  // 2. Armazenamento de Arquivos (R2) - RENOMEADO
+  // Mudamos de "ASSETS" para "STORAGE" no wrangler.jsonc para liberar o nome "ASSETS".
+  STORAGE: R2Bucket;
 
-  // Adiciona as variáveis de ambiente do Cloudflare
+  // 3. Arquivos Estáticos (Pasta Public) - NOVO TIPO
+  // Este é o binding reservado que o Cloudflare cria automaticamente para a configuração "assets".
+  // Ele é do tipo 'Fetcher', não 'R2Bucket'.
+  ASSETS: Fetcher;
+
+  // 4. Variáveis de Ambiente e Segredos
+  JWT_SECRET: string;
+
+  // 5. Variáveis do Cloudflare Analytics
   CLOUDFLARE_ACCOUNT_ID: string;
   CLOUDFLARE_ZONE_ID: string;
   CLOUDFLARE_API_TOKEN: string;
