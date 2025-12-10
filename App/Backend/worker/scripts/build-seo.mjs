@@ -1,4 +1,3 @@
-
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -8,77 +7,56 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // =========================================================
-// 1. CONFIGURAÇÕES
+// 1. CONFIGURATION (Global Web3 Standard)
 // =========================================================
 const CONFIG = {
   domain: process.env.PUBLIC_URL || "https://api.asppibra.com",
   appName: "ASPPIBRA Governance",
   appShortName: "ASPPIBRA",
-  appDescription: "Sistema de Governança e Monitoramento de API em Tempo Real.",
+  
+  // ✅ ATUALIZADO: Descrição em Inglês Técnico (Web3)
+  appDescription: "Real-time telemetry and observability of ASPPIBRA DAO's decentralized infrastructure.",
+  
   themeColor: "#1A1A2E",
   backgroundColor: "#1A1A2E",
   
-  // Caminhos Relativos (Script está em /scripts -> sobe um e entra em public)
+  // Caminhos (Script em /scripts -> sobe um e entra em public)
   publicDir: path.join(__dirname, "../public"),
-  routesDir: path.join(__dirname, "../src/routes"), 
 };
 
-// Páginas Fixas (Sempre existem)
-const FIXED_PAGES = [
+// ✅ ESTRATÉGIA SEGURA: Indexar APENAS a URL Raiz
+const PUBLIC_PAGES = [
   { url: "/", priority: "1.0", freq: "always" },
 ];
 
 // =========================================================
-// 2. DETECÇÃO AUTOMÁTICA DE ROTAS (Nível NASA 🚀)
-// =========================================================
-function getDynamicRoutes() {
-  const routes = [];
-  
-  if (fs.existsSync(CONFIG.routesDir)) {
-    console.log(`🔎 Escaneando rotas em: ${CONFIG.routesDir}`);
-    const files = fs.readdirSync(CONFIG.routesDir);
-    
-    files.forEach(file => {
-      if (file.endsWith('.ts') || file.endsWith('.js')) {
-        // Ex: "users.ts" vira "/users"
-        const routeName = file.replace(/\.(ts|js)$/, "");
-        // Ignora arquivos de sistema/index se houver
-        if (routeName !== "index") {
-          routes.push({ 
-            url: `/${routeName}`, 
-            priority: "0.8", 
-            freq: "daily" 
-          });
-          console.log(`   + Rota detectada: /${routeName}`);
-        }
-      }
-    });
-  } else {
-    console.warn(`⚠️  Diretório de rotas não encontrado: ${CONFIG.routesDir}`);
-  }
-  
-  return routes;
-}
-
-// =========================================================
-// 3. GERADORES DE CONTEÚDO
+// 2. CONTENT GENERATORS
 // =========================================================
 
+// ✅ ATUALIZADO: Comentários em Inglês e Regras de Segurança
 const getRobotsTxt = () => `# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
 Allow: /site.webmanifest
 Allow: /favicon.ico
 
-# Segurança: Rotas Sensíveis
+# Security: Block ALL Internal API Routes
 Disallow: /monitoring
 Disallow: /health-db
+Disallow: /users/
+Disallow: /auth/
+Disallow: /post/
+# Wildcard safety net
+Disallow: /api/*
 
-# Arquivos de Sistema
+# System Files & Config
 Disallow: /wrangler.toml
+Disallow: /wrangler.jsonc
 Disallow: /package.json
+Disallow: /node_modules/
 Disallow: *.ts
 
+# Sitemap Location
 Sitemap: ${CONFIG.domain}/sitemap.xml
 `;
 
@@ -99,35 +77,34 @@ const getManifest = () => ({
 });
 
 // =========================================================
-// 4. EXECUÇÃO
+// 3. EXECUTION
 // =========================================================
 
-console.log(`\n🚀 INICIANDO SEO BUILDER [${CONFIG.appName}]`);
+console.log(`\n🚀 STARTING SECURE SEO BUILD [${CONFIG.appName}]`);
 
 try {
-  // 1. Prepara Diretório
+  // Garante o diretório
   if (!fs.existsSync(CONFIG.publicDir)) {
     fs.mkdirSync(CONFIG.publicDir, { recursive: true });
   }
 
-  // 2. Robots.txt
+  // 1. Robots.txt
   fs.writeFileSync(path.join(CONFIG.publicDir, "robots.txt"), getRobotsTxt());
-  console.log("   ✅ Robots.txt gerado");
+  console.log("   ✅ Robots.txt generated (Security Rules Applied)");
 
-  // 3. Manifest.json
+  // 2. Manifest.json
   fs.writeFileSync(
     path.join(CONFIG.publicDir, "site.webmanifest"), 
     JSON.stringify(getManifest(), null, 2)
   );
-  console.log("   ✅ Manifest PWA gerado");
+  console.log("   ✅ Manifest PWA generated");
 
-  // 4. Sitemap.xml (Com rotas dinâmicas)
+  // 3. Sitemap.xml (ROOT ONLY - Sem expor rotas internas)
   const today = new Date().toISOString().split("T")[0];
-  const allPages = [...FIXED_PAGES, ...getDynamicRoutes()];
   
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allPages.map(p => `  <url>
+${PUBLIC_PAGES.map(p => `  <url>
     <loc>${CONFIG.domain}${p.url}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${p.freq}</changefreq>
@@ -136,28 +113,28 @@ ${allPages.map(p => `  <url>
 </urlset>`;
   
   fs.writeFileSync(path.join(CONFIG.publicDir, "sitemap.xml"), sitemap);
-  console.log(`   ✅ Sitemap XML gerado com ${allPages.length} URLs`);
+  console.log(`   ✅ Sitemap XML generated (Root only - Secure)`);
 
 } catch (e) {
-  console.error("\n❌ ERRO FATAL NO BUILD:", e);
+  console.error("\n❌ FATAL BUILD ERROR:", e);
   process.exit(1);
 }
 
 // =========================================================
-// 5. AUDITORIA FINAL
+// 4. AUDIT
 // =========================================================
-console.log("\n🔍 Auditando Integridade...");
+console.log("\n🔍 Auditing Assets...");
 const requiredFiles = [
   "android-chrome-192x192.png",
   "android-chrome-512x512.png",
   "favicon.ico",
-  "social-preview.png"
+  "social-preview.png" // Garante que o banner do WhatsApp existe
 ];
 
 let missing = 0;
 requiredFiles.forEach(file => {
   if (!fs.existsSync(path.join(CONFIG.publicDir, file))) {
-    console.error(`   ❌ [FALHA] Faltando imagem: ${file}`);
+    console.error(`   ❌ [FAIL] Missing file: ${file}`);
     missing++;
   } else {
     console.log(`   ok: ${file}`);
@@ -165,8 +142,8 @@ requiredFiles.forEach(file => {
 });
 
 if (missing > 0) {
-  console.error(`\n⚠️  ATENÇÃO: ${missing} assets vitais estão faltando!`);
-  // process.exit(1); // Descomente para bloquear deploy se faltar ícone
+  console.error(`\n⚠️  WARNING: ${missing} vital assets are missing!`);
+  // process.exit(1); // Descomente se quiser bloquear o deploy em caso de erro
 } else {
-  console.log("\n✨ SUCESSO TOTAL. Sistema pronto para deploy.\n");
+  console.log("\n✨ SUCCESS. System ready for deploy.\n");
 }

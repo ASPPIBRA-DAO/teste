@@ -10,23 +10,24 @@ interface DashboardProps {
 
 export const DashboardTemplate = (props: DashboardProps) => html`
   <!DOCTYPE html>
-  <html lang="pt-BR">
+  <html lang="en">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>ASPPIBRA | Governance</title>
-    <meta name="description" content="Monitoramento em tempo real de governança e API.">
+    <title>ASPPIBRA | Network Status</title>
+    <meta name="description" content="Real-time telemetry and observability of ASPPIBRA DAO's decentralized infrastructure.">
     
     <meta property="og:type" content="website">
     <meta property="og:url" content="${props.domain}">
-    <meta property="og:title" content="ASPPIBRA Governance System">
-    <meta property="og:description" content="Status Operacional: Online. Monitoramento de D1 e Tráfego.">
+    <meta property="og:title" content="ASPPIBRA Protocol | Network Health & Nodes">
+    <meta property="og:description" content="⚡ Decentralized Infrastructure Operational. Real-time telemetry of global edge nodes, protocol latency, and Ledger integrity.">
     <meta property="og:image" content="${props.imageUrl}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="${props.domain}">
-    <meta name="twitter:title" content="ASPPIBRA Governance">
+    <meta name="twitter:title" content="ASPPIBRA Protocol Status">
+    <meta name="twitter:description" content="⚡ Real-time Telemetry: Global Nodes, Latency & D1 Ledger.">
     <meta name="twitter:image" content="${props.imageUrl}">
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -37,7 +38,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
     <style>
       :root { --primary-glow: #F56040; --accent-blue: #00FFFF; }
 
-      /* TEMA DARK (Original) */
+      /* DARK THEME (Original) */
       .theme-dark { 
         --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); 
         --bg-card: rgba(255, 255, 255, 0.05); 
@@ -53,7 +54,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         --neg-change: #f87171; 
       }
 
-      /* TEMA LIGHT (Corrigido para contraste, sem alterar estrutura) */
+      /* LIGHT THEME (Legible Fix) */
       .theme-light { 
         --bg-main: #F0F2F5; 
         --bg-card: #FFFFFF; 
@@ -78,7 +79,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         border: 1px solid var(--border-main); 
         box-shadow: var(--card-shadow); 
         border-radius: 20px; 
-        transition: all 0.3s; 
+        transition: all 0.3s;
       }
 
       header { background: var(--bg-card-header); backdrop-filter: var(--card-blur); border-bottom: 1px solid var(--border-main); padding: 1rem 0; width: 100%; z-index: 1000; position: sticky; top: 0; }
@@ -96,13 +97,6 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       .summary-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
       .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: var(--text-main); }
       .summary-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-      
-      /* Classes originais do layout */
-      .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; }
-      .theme-dark .change { background: rgba(255,255,255,0.05); }
-      .theme-light .change { background: rgba(0,0,0,0.05); }
-      .change.positive { color: var(--pos-change); }
-      .change.negative { color: var(--neg-change); }
 
       .tech-dashboard { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
       .col-system { flex: 1; min-width: 320px; }
@@ -140,13 +134,21 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       .loading { animation: pulse 1.5s infinite; color: var(--text-muted); }
       @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
       
-      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s, color 0.3s; z-index: 1001; }
+      /* Botão de Tema */
+      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s; }
       #theme-toggle:hover { box-shadow: var(--card-shadow); }
+      
+      /* Classes de Status (Originais) */
+      .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; }
+      .theme-dark .change { background: rgba(255,255,255,0.05); }
+      .theme-light .change { background: rgba(0,0,0,0.05); }
+      .change.positive { color: var(--pos-change); }
+      .change.negative { color: var(--neg-change); }
     </style>
   </head>
   <body class="theme-dark"> 
     <header>
-      <button id="theme-toggle" title="Alternar Tema">🌙</button>
+      <button id="theme-toggle" title="Switch Theme">🌙</button>
       <h1>ASPPIBRA DAO</h1>
     </header>
 
@@ -244,7 +246,6 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         const listCountries = document.getElementById('list-countries');
 
         try {
-          console.log("Fetching metrics...");
           const response = await fetch('/monitoring');
           const data = await response.json();
           if (data.error) throw new Error(data.error);
@@ -283,7 +284,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
           }
         } catch (e) {
           console.error('Error loading metrics', e);
-          const errElem = '<span style="color:var(--neg-change); font-size:0.8rem;">Erro</span>';
+          const errElem = '<span style="color:var(--neg-change); font-size:0.8rem;">Offline</span>';
           lblTotalRequests.innerHTML = errElem;
         }
       }
