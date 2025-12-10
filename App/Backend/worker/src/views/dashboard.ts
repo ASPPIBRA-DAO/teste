@@ -1,11 +1,11 @@
 import { html } from 'hono/html';
 
 interface DashboardProps {
-    version: string;
-    service: string;
-    cacheRatio: string;
-    domain: string;
-    imageUrl: string;
+  version: string;
+  service: string;
+  cacheRatio: string;
+  domain: string;
+  imageUrl: string;
 }
 
 export const DashboardTemplate = (props: DashboardProps) => html`
@@ -36,11 +36,63 @@ export const DashboardTemplate = (props: DashboardProps) => html`
     
     <style>
       :root { --primary-glow: #F56040; --accent-blue: #00FFFF; }
-      .theme-dark { --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); --bg-card: rgba(255, 255, 255, 0.05); --bg-card-header: rgba(0, 0, 0, 0.2); --text-main: #ffffff; --text-muted: #94a3b8; --border-main: rgba(255, 255, 255, 0.1); --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); --card-blur: blur(12px); --status-bg: rgba(0, 255, 255, 0.1); --status-glow: #00FFFF; --pos-change: var(--primary-glow); --neg-change: #f87171; }
-      body { font-family: 'Inter', sans-serif; background: var(--bg-main); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; margin: 0; }
-      .glass-panel { background: var(--bg-card); backdrop-filter: var(--card-blur); -webkit-backdrop-filter: var(--card-blur); border: 1px solid var(--border-main); box-shadow: var(--card-shadow); border-radius: 20px; }
+
+      /* --- TEMA DARK (Mantido original) --- */
+      .theme-dark { 
+        --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); 
+        --bg-card: rgba(255, 255, 255, 0.05); 
+        --bg-card-header: rgba(0, 0, 0, 0.2); 
+        --text-main: #ffffff; 
+        --text-muted: #94a3b8; 
+        --border-main: rgba(255, 255, 255, 0.1); 
+        --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
+        --card-blur: blur(12px); 
+        --status-bg: rgba(0, 255, 255, 0.1); 
+        --status-glow: #00FFFF; 
+        --pos-change: var(--primary-glow); 
+        --neg-change: #f87171; 
+      }
+
+      /* --- TEMA LIGHT (CORRIGIDO) --- */
+      .theme-light { 
+        /* Fundo cinza suave para contraste */
+        --bg-main: #F0F2F5; 
+        
+        /* Cartões Brancos Sólidos */
+        --bg-card: #FFFFFF; 
+        --bg-card-header: #F8F9FA; 
+        
+        /* Texto Escuro Forte */
+        --text-main: #1A1A2E; 
+        --text-muted: #57606a; 
+        
+        /* Bordas visíveis */
+        --border-main: #D1D5DB; 
+        
+        /* Sombra moderna para dar profundidade */
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
+        
+        --card-blur: none; 
+        --status-bg: rgba(0, 150, 136, 0.1); 
+        --status-glow: #009688; 
+        --pos-change: #10B981; 
+        --neg-change: #EF4444; 
+      }
+
+      body { font-family: 'Inter', sans-serif; background: var(--bg-main); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; }
+      
+      .glass-panel { 
+        background: var(--bg-card); 
+        backdrop-filter: var(--card-blur); 
+        -webkit-backdrop-filter: var(--card-blur); 
+        border: 1px solid var(--border-main); 
+        box-shadow: var(--card-shadow); 
+        border-radius: 20px; 
+      }
+
       header { background: var(--bg-card-header); backdrop-filter: var(--card-blur); border-bottom: 1px solid var(--border-main); padding: 1rem 0; width: 100%; z-index: 1000; position: sticky; top: 0; }
       header h1 { margin: 0; font-weight: 300; letter-spacing: 1px; font-size: 1.2rem; opacity: 0.9; text-align: center; }
+      
       main { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; box-sizing: border-box; }
       .main-container { width: 100%; max-width: 1100px; }
       
@@ -49,7 +101,8 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       .welcome-card p { margin-top: 0.8rem; color: var(--text-muted); font-size: 1rem; }
       
       .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-      .summary-card { padding: 1.8rem; }
+      .summary-card { padding: 1.8rem; transition: transform 0.2s; }
+      .summary-card:hover { transform: translateY(-5px); }
       .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: var(--text-main); }
       .summary-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
 
@@ -80,12 +133,14 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-main); }
       .country-list { list-style: none; padding: 0; margin: 0; }
       .country-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-main); color: var(--text-main); font-size: 0.95rem; }
+      .country-item:hover { background: rgba(0,0,0,0.05); }
       
       footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; background: transparent; padding: 2rem; text-align: center; }
       .loading { animation: pulse 1.5s infinite; color: var(--text-muted); }
       @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
       
-      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s; }
+      #theme-toggle:hover { box-shadow: var(--card-shadow); }
       .change.positive { color: var(--pos-change); font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; background: rgba(0,255,255,0.05); }
     </style>
   </head>
