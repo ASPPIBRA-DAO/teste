@@ -147,7 +147,7 @@ app.get('/', (c) => {
     cacheRatio: "--%",
     domain: domain,
     // Garante que a imagem está na pasta public e é acessível
-    imageUrl: `${domain}/android-chrome-192x192.png`
+    imageUrl: `${domain}/social-preview.png`
   };
 
   // Renderiza usando o arquivo separado
