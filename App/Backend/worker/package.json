@@ -3,10 +3,10 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
 		"test": "vitest",
+		"dev": "wrangler dev",
+		"build:seo": "node scripts/build-seo.mjs",
+		"deploy": "pnpm run build:seo && wrangler deploy",
 		"cf-typegen": "wrangler types"
 	},
 	"devDependencies": {

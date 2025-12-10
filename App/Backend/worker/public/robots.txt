@@ -1,0 +1,16 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /site.webmanifest
+Allow: /favicon.ico
+
+# Segurança: Rotas Sensíveis
+Disallow: /monitoring
+Disallow: /health-db
+
+# Arquivos de Sistema
+Disallow: /wrangler.toml
+Disallow: /package.json
+Disallow: *.ts
+
+Sitemap: https://api.asppibra.com/sitemap.xml

@@ -37,7 +37,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
     <style>
       :root { --primary-glow: #F56040; --accent-blue: #00FFFF; }
 
-      /* --- TEMA DARK (Mantido original) --- */
+      /* TEMA DARK (Original) */
       .theme-dark { 
         --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); 
         --bg-card: rgba(255, 255, 255, 0.05); 
@@ -53,25 +53,15 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         --neg-change: #f87171; 
       }
 
-      /* --- TEMA LIGHT (CORRIGIDO) --- */
+      /* TEMA LIGHT (Corrigido para contraste, sem alterar estrutura) */
       .theme-light { 
-        /* Fundo cinza suave para contraste */
         --bg-main: #F0F2F5; 
-        
-        /* Cartões Brancos Sólidos */
         --bg-card: #FFFFFF; 
         --bg-card-header: #F8F9FA; 
-        
-        /* Texto Escuro Forte */
         --text-main: #1A1A2E; 
         --text-muted: #57606a; 
-        
-        /* Bordas visíveis */
         --border-main: #D1D5DB; 
-        
-        /* Sombra moderna para dar profundidade */
         --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
-        
         --card-blur: none; 
         --status-bg: rgba(0, 150, 136, 0.1); 
         --status-glow: #009688; 
@@ -79,7 +69,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         --neg-change: #EF4444; 
       }
 
-      body { font-family: 'Inter', sans-serif; background: var(--bg-main); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; margin: 0; transition: background 0.3s, color 0.3s; }
+      body { font-family: 'Inter', sans-serif; background: var(--bg-main); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; margin: 0; transition: background 0.3s; }
       
       .glass-panel { 
         background: var(--bg-card); 
@@ -88,6 +78,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         border: 1px solid var(--border-main); 
         box-shadow: var(--card-shadow); 
         border-radius: 20px; 
+        transition: all 0.3s; 
       }
 
       header { background: var(--bg-card-header); backdrop-filter: var(--card-blur); border-bottom: 1px solid var(--border-main); padding: 1rem 0; width: 100%; z-index: 1000; position: sticky; top: 0; }
@@ -102,18 +93,26 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       
       .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
       .summary-card { padding: 1.8rem; transition: transform 0.2s; }
-      .summary-card:hover { transform: translateY(-5px); }
+      .summary-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
       .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: var(--text-main); }
       .summary-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+      
+      /* Classes originais do layout */
+      .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; }
+      .theme-dark .change { background: rgba(255,255,255,0.05); }
+      .theme-light .change { background: rgba(0,0,0,0.05); }
+      .change.positive { color: var(--pos-change); }
+      .change.negative { color: var(--neg-change); }
 
       .tech-dashboard { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
       .col-system { flex: 1; min-width: 320px; }
       .col-infra { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
       
       .governance-card { padding: 3rem; text-align: center; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(180deg, var(--bg-card) 0%, rgba(255,255,255,0) 100%); }
-      .logo-container { width: 100px; height: 100px; margin: 0 auto 1.5rem; background: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); }
+      .logo-container { width: 100px; height: 100px; margin: 0 auto 1.5rem; background: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); box-shadow: 0 0 30px rgba(0, 0, 0, 0.08); }
       .logo-img { width: 60px; height: 60px; object-fit: contain; }
-      .status-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--status-bg); color: var(--status-glow); padding: 8px 20px; border-radius: 99px; font-weight: 600; font-size: 0.9rem; margin: 1.5rem auto; border: 1px solid rgba(0, 0, 0, 0.1); }
+      
+      .status-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--status-bg); color: var(--status-glow); padding: 8px 20px; border-radius: 99px; font-weight: 600; font-size: 0.9rem; margin: 1.5rem auto; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); }
       .dot { width: 8px; height: 8px; background: var(--status-glow); border-radius: 50%; box-shadow: 0 0 8px var(--status-glow); }
       
       .sys-details { background: var(--bg-card-header); border-radius: 12px; padding: 1.2rem; text-align: left; font-size: 0.9rem; margin-top: auto; border: 1px solid var(--border-main); }
@@ -126,22 +125,23 @@ export const DashboardTemplate = (props: DashboardProps) => html`
       .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
       .metric-value { font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 0; }
       .metric-bar { height: 6px; width: 100%; background: var(--border-main); margin-top: 15px; border-radius: 3px; }
-      .bar-fill { height: 100%; border-radius: 3px; }
-      .bar-fill.green { background: var(--status-glow); } .bar-fill.blue { background: #60a5fa; }
+      .bar-fill { height: 100%; border-radius: 3px; position: relative; }
+      .bar-fill.green { background: var(--status-glow); box-shadow: 0 0 10px var(--status-glow); } 
+      .bar-fill.blue { background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
       
       .countries-card { padding: 1.5rem; flex-grow: 1; }
       .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-main); }
       .country-list { list-style: none; padding: 0; margin: 0; }
-      .country-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-main); color: var(--text-main); font-size: 0.95rem; }
-      .country-item:hover { background: rgba(0,0,0,0.05); }
+      .country-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-main); color: var(--text-main); font-size: 0.95rem; transition: background 0.2s; border-radius: 8px; }
+      .country-item:hover { background: rgba(0,0,0,0.05); } 
+      .theme-dark .country-item:hover { background: rgba(255,255,255,0.05); }
       
       footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; background: transparent; padding: 2rem; text-align: center; }
       .loading { animation: pulse 1.5s infinite; color: var(--text-muted); }
       @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
       
-      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s; }
+      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s, color 0.3s; z-index: 1001; }
       #theme-toggle:hover { box-shadow: var(--card-shadow); }
-      .change.positive { color: var(--pos-change); font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; background: rgba(0,255,255,0.05); }
     </style>
   </head>
   <body class="theme-dark"> 
@@ -152,6 +152,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
 
     <main>
       <div class="main-container">
+        
         <div class="welcome-card glass-panel">
           <h2>Welcome back Jaydon Frankie</h2>
           <p>System metrics and real-time governance overview.</p>
@@ -226,6 +227,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
     <script>
       const toggleButton = document.getElementById('theme-toggle');
       const body = document.body;
+      
       function applyTheme(theme) { body.className = ''; body.classList.add('theme-' + theme); toggleButton.innerText = theme === 'dark' ? '☀️' : '🌙'; localStorage.setItem('theme', theme); }
       function toggleTheme() { const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light'; const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(newTheme); }
       function initTheme() { const savedTheme = localStorage.getItem('theme'); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; if (savedTheme) applyTheme(savedTheme); else if (prefersDark) applyTheme('dark'); else applyTheme('light'); }
@@ -242,11 +244,13 @@ export const DashboardTemplate = (props: DashboardProps) => html`
         const listCountries = document.getElementById('list-countries');
 
         try {
+          console.log("Fetching metrics...");
           const response = await fetch('/monitoring');
           const data = await response.json();
           if (data.error) throw new Error(data.error);
 
           lblTotalRequests.innerText = data.requests.toLocaleString();
+          
           const bytes = data.bytes;
           let byteStr = "0 B";
           if (bytes > 1073741824) byteStr = (bytes / 1073741824).toFixed(2) + " GB";
@@ -279,6 +283,8 @@ export const DashboardTemplate = (props: DashboardProps) => html`
           }
         } catch (e) {
           console.error('Error loading metrics', e);
+          const errElem = '<span style="color:var(--neg-change); font-size:0.8rem;">Erro</span>';
+          lblTotalRequests.innerHTML = errElem;
         }
       }
       fetchMetrics();
