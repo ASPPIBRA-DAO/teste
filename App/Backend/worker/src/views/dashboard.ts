@@ -33,148 +33,68 @@ export const DashboardTemplate = (props: DashboardProps) => html`
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="manifest" href="/site.webmanifest">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <style>
-      :root { --primary-glow: #F56040; --accent-blue: #00FFFF; }
-
-      /* DARK THEME (Original) */
-      .theme-dark { 
-        --bg-main: linear-gradient(135deg, #1A1A2E 0%, #0F0F1A 100%); 
-        --bg-card: rgba(255, 255, 255, 0.05); 
-        --bg-card-header: rgba(0, 0, 0, 0.2); 
-        --text-main: #ffffff; 
-        --text-muted: #94a3b8; 
-        --border-main: rgba(255, 255, 255, 0.1); 
-        --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
-        --card-blur: blur(12px); 
-        --status-bg: rgba(0, 255, 255, 0.1); 
-        --status-glow: #00FFFF; 
-        --pos-change: var(--primary-glow); 
-        --neg-change: #f87171; 
-      }
-
-      /* LIGHT THEME (Legible Fix) */
-      .theme-light { 
-        --bg-main: #F0F2F5; 
-        --bg-card: #FFFFFF; 
-        --bg-card-header: #F8F9FA; 
-        --text-main: #1A1A2E; 
-        --text-muted: #57606a; 
-        --border-main: #D1D5DB; 
-        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); 
-        --card-blur: none; 
-        --status-bg: rgba(0, 150, 136, 0.1); 
-        --status-glow: #009688; 
-        --pos-change: #10B981; 
-        --neg-change: #EF4444; 
-      }
-
-      body { font-family: 'Inter', sans-serif; background: var(--bg-main); background-attachment: fixed; color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; margin: 0; transition: background 0.3s; }
-      
-      .glass-panel { 
-        background: var(--bg-card); 
-        backdrop-filter: var(--card-blur); 
-        -webkit-backdrop-filter: var(--card-blur); 
-        border: 1px solid var(--border-main); 
-        box-shadow: var(--card-shadow); 
-        border-radius: 20px; 
-        transition: all 0.3s;
-      }
-
-      header { background: var(--bg-card-header); backdrop-filter: var(--card-blur); border-bottom: 1px solid var(--border-main); padding: 1rem 0; width: 100%; z-index: 1000; position: sticky; top: 0; }
-      header h1 { margin: 0; font-weight: 300; letter-spacing: 1px; font-size: 1.2rem; opacity: 0.9; text-align: center; }
-      
-      main { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 40px 20px; box-sizing: border-box; }
-      .main-container { width: 100%; max-width: 1100px; }
-      
-      .welcome-card { background: linear-gradient(135deg, var(--bg-card) 0%, rgba(255,255,255,0) 100%); border: 1px solid var(--border-main); padding: 2.5rem; border-radius: 24px; margin-bottom: 2.5rem; position: relative; overflow: hidden; }
-      .welcome-card h2 { margin: 0; font-size: 2rem; font-weight: 700; background: linear-gradient(to right, var(--text-main), var(--status-glow)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-      .welcome-card p { margin-top: 0.8rem; color: var(--text-muted); font-size: 1rem; }
-      
-      .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-      .summary-card { padding: 1.8rem; transition: transform 0.2s; }
-      .summary-card:hover { transform: translateY(-5px); border-color: var(--primary-glow); }
-      .summary-card .value { font-size: 2.5rem; font-weight: 700; margin: 0.8rem 0; color: var(--text-main); }
-      .summary-card h3 { font-size: 0.85rem; color: var(--text-muted); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-
-      .tech-dashboard { display: flex; flex-wrap: wrap; gap: 24px; align-items: stretch; }
-      .col-system { flex: 1; min-width: 320px; }
-      .col-infra { flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 24px; }
-      
-      .governance-card { padding: 3rem; text-align: center; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; background: linear-gradient(180deg, var(--bg-card) 0%, rgba(255,255,255,0) 100%); }
-      .logo-container { width: 100px; height: 100px; margin: 0 auto 1.5rem; background: var(--bg-card); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-main); box-shadow: 0 0 30px rgba(0, 0, 0, 0.08); }
-      .logo-img { width: 60px; height: 60px; object-fit: contain; }
-      
-      .status-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--status-bg); color: var(--status-glow); padding: 8px 20px; border-radius: 99px; font-weight: 600; font-size: 0.9rem; margin: 1.5rem auto; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 0 15px rgba(0, 0, 0, 0.05); }
-      .dot { width: 8px; height: 8px; background: var(--status-glow); border-radius: 50%; box-shadow: 0 0 8px var(--status-glow); }
-      
-      .sys-details { background: var(--bg-card-header); border-radius: 12px; padding: 1.2rem; text-align: left; font-size: 0.9rem; margin-top: auto; border: 1px solid var(--border-main); }
-      .sys-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-main); color: var(--text-muted); }
-      .sys-row:last-child { border-bottom: none; }
-      .sys-val { color: var(--text-main); font-family: monospace; }
-      
-      .db-metrics-row { display: flex; gap: 24px; }
-      .metric-card { flex: 1; padding: 1.5rem; position: relative; overflow: hidden; }
-      .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-      .metric-value { font-size: 2rem; font-weight: 700; color: var(--text-main); margin: 0; }
-      .metric-bar { height: 6px; width: 100%; background: var(--border-main); margin-top: 15px; border-radius: 3px; }
-      .bar-fill { height: 100%; border-radius: 3px; position: relative; }
-      .bar-fill.green { background: var(--status-glow); box-shadow: 0 0 10px var(--status-glow); } 
-      .bar-fill.blue { background: #60a5fa; box-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
-      
-      .countries-card { padding: 1.5rem; flex-grow: 1; }
-      .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-main); }
-      .country-list { list-style: none; padding: 0; margin: 0; }
-      .country-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 10px; border-bottom: 1px solid var(--border-main); color: var(--text-main); font-size: 0.95rem; transition: background 0.2s; border-radius: 8px; }
-      .country-item:hover { background: rgba(0,0,0,0.05); } 
-      .theme-dark .country-item:hover { background: rgba(255,255,255,0.05); }
-      
-      footer { margin-top: 3rem; color: var(--text-muted); font-size: 0.8rem; background: transparent; padding: 2rem; text-align: center; }
-      .loading { animation: pulse 1.5s infinite; color: var(--text-muted); }
-      @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 0.8; } 100% { opacity: 0.4; } }
-      
-      /* Botão de Tema */
-      #theme-toggle { position: absolute; top: 1rem; right: 2rem; background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-main); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: background 0.3s; }
-      #theme-toggle:hover { box-shadow: var(--card-shadow); }
-      
-      /* Classes de Status (Originais) */
-      .change { font-size: 0.85rem; font-weight: 500; display: inline-block; padding: 4px 10px; border-radius: 12px; }
-      .theme-dark .change { background: rgba(255,255,255,0.05); }
-      .theme-light .change { background: rgba(0,0,0,0.05); }
-      .change.positive { color: var(--pos-change); }
-      .change.negative { color: var(--neg-change); }
-    </style>
+    <link rel="stylesheet" href="/css/style.css">
   </head>
   <body class="theme-dark"> 
+    <div class="bg-grid"></div>
+    
     <header>
-      <button id="theme-toggle" title="Switch Theme">🌙</button>
-      <h1>ASPPIBRA DAO</h1>
+      <div class="header-container">
+        <div class="header-brand">
+          <div class="logo-wrapper">
+            <div class="logo-glow"></div>
+            <img src="/android-chrome-192x192.png" alt="ASPPIBRA" class="header-logo" onerror="this.style.display='none'">
+          </div>
+          <div class="header-text-col">
+            <h1 class="header-title">ASPPIBRA DAO</h1>
+            <span class="header-subtitle">// CORE API_V1 STATUS</span>
+          </div>
+        </div>
+
+        <div class="header-tools">
+          
+          <div class="network-pill" title="Network Status: Operational">
+            <div class="pulse-dot"></div>
+            <span class="network-text">EDGE_NET</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <button class="wallet-btn" title="Connected: 0x71...F4">
+            <div class="identicon"></div>
+            <span class="wallet-addr">0x71...F4</span>
+          </button>
+
+          <button id="theme-toggle" title="Switch Theme">☀️</button>
+        </div>
+      </div>
     </header>
 
     <main>
       <div class="main-container">
         
         <div class="welcome-card glass-panel">
-          <h2>Welcome back Jaydon Frankie</h2>
-          <p>System metrics and real-time governance overview.</p>
+          <h2>Welcome back, <span style="color: var(--text-highlight);">Jaydon Frankie</span></h2>
+          <p>System telemetry active. Real-time global governance overview.</p>
         </div>
 
         <div class="summary-grid">
           <div class="summary-card glass-panel">
-            <h3>Total de Solicitações (24h)</h3>
-            <p class="value" id="lbl-total-requests"><span class="loading">--</span></p>
-            <div class="change positive">Monitorando...</div>
+            <h3>Total Requests (24h)</h3>
+            <p class="value" id="lbl-total-requests"><span class="loading">0000</span></p>
+            <div class="label-badge">Monitoring</div>
           </div>
           <div class="summary-card glass-panel">
-            <h3>Dados Transferidos (24h)</h3>
-            <p class="value" id="lbl-total-bytes"><span class="loading">--</span></p>
-            <div class="change positive">Bandwidth</div>
+            <h3>Data Transfer</h3>
+            <p class="value" id="lbl-total-bytes"><span class="loading">-- GB</span></p>
+            <div class="label-badge">Bandwidth</div>
           </div>
           <div class="summary-card glass-panel">
-            <h3>DB Writes (24h)</h3>
-            <p class="value" id="lbl-summary-writes"><span class="loading">--</span></p>
-            <div class="change positive">DB Workload</div>
+            <h3>DB Workload</h3>
+            <p class="value" id="lbl-summary-writes"><span class="loading">0</span></p>
+            <div class="label-badge">Writes/Sec</div>
           </div>
         </div>
 
@@ -182,11 +102,14 @@ export const DashboardTemplate = (props: DashboardProps) => html`
           <div class="col-system">
             <div class="governance-card glass-panel">
               <div class="logo-container">
+                  <div class="logo-ring"></div>
                   <img src="/android-chrome-192x192.png" alt="Logo" class="logo-img" onerror="this.style.display='none'">
               </div>
-              <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Governance System</h2>
+              <h2 style="margin: 0; font-size: 1.4rem; font-weight: 700; color: var(--text-highlight);">Governance System</h2>
               <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.9rem;">API Backend & DAO Services</p>
+              
               <div class="status-badge"><span class="dot"></span> Operational</div>
+              
               <div class="sys-details">
                 <div class="sys-row"><span>Version</span> <span class="sys-val">${props.version}</span></div>
                 <div class="sys-row"><span>Service</span> <span class="sys-val">${props.service}</span></div>
@@ -201,41 +124,99 @@ export const DashboardTemplate = (props: DashboardProps) => html`
               <div class="metric-card glass-panel">
                 <div class="metric-title">DB Reads (24h)</div>
                 <div class="metric-value" id="lbl-reads"><span class="loading">--</span></div>
-                <div class="metric-bar"><div class="bar-fill green" id="bar-reads" style="width: 0%;"></div></div>
+                <div class="metric-bar"><div class="bar-fill cyan" id="bar-reads" style="width: 0%;"></div></div>
               </div>
               <div class="metric-card glass-panel">
                 <div class="metric-title">DB Writes (24h)</div>
                 <div class="metric-value" id="lbl-writes"><span class="loading">--</span></div>
-                <div class="metric-bar"><div class="bar-fill blue" id="bar-writes" style="width: 0%;"></div></div>
+                <div class="metric-bar"><div class="bar-fill purple" id="bar-writes" style="width: 0%;"></div></div>
               </div>
             </div>
 
             <div class="countries-card glass-panel">
               <div class="card-header">
-                <h4 style="margin:0; font-weight:600; color: var(--text-main);">🌍 Top Traffic Origin</h4>
-                <span style="font-size: 0.7rem; background: rgba(0,0,0,0.1); padding: 4px 10px; border-radius: 4px; color: var(--text-muted);">Live</span>
+                <h4 style="margin:0; font-weight:600; color: var(--text-highlight); display:flex; align-items:center; gap:8px;">
+                  🌍 Traffic Origin
+                </h4>
+                <div class="live-indicator"><div class="live-dot"></div> Live Feed</div>
               </div>
-              <ul class="country-list" id="list-countries">
-                 <li class="country-item"><span class="loading">Scanning network...</span></li>
-              </ul>
+              <div class="country-list-container">
+                <ul class="country-list" id="list-countries">
+                   <li class="country-item"><span class="loading">Scanning global nodes...</span></li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </main>
 
-    <footer><p>Powered by ASPPIBRA DAO • Secured by Cloudflare</p></footer>
+    <footer>
+      <div class="footer-container">
+        
+        <div class="footer-brand">
+          <strong>ASPPIBRA DAO Foundation</strong>
+          <span>© 2025 All rights reserved. Decentralized Protocol.</span>
+        </div>
+
+        <div class="footer-links">
+          <a href="#" title="Documentation">Docs</a>
+          <a href="#" title="System Status Page">Status</a>
+          <a href="#" title="Governance Proposal">Governance</a>
+          <a href="#" title="Privacy Policy">Privacy</a>
+        </div>
+
+        <div class="footer-tech">
+          <div class="tech-item">
+            SYSTEM ONLINE <div class="status-dot-small"></div>
+          </div>
+          <div class="tech-item">
+            <span style="color: var(--text-muted)">v</span>${props.version} • EDGE_NODE_BR
+          </div>
+          <div class="tech-item" style="opacity: 0.5;">
+            Latency: <span id="footer-latency">--ms</span>
+          </div>
+        </div>
+
+      </div>
+    </footer>
 
     <script>
+      // Theme Logic
       const toggleButton = document.getElementById('theme-toggle');
       const body = document.body;
       
-      function applyTheme(theme) { body.className = ''; body.classList.add('theme-' + theme); toggleButton.innerText = theme === 'dark' ? '☀️' : '🌙'; localStorage.setItem('theme', theme); }
-      function toggleTheme() { const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light'; const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; applyTheme(newTheme); }
-      function initTheme() { const savedTheme = localStorage.getItem('theme'); const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; if (savedTheme) applyTheme(savedTheme); else if (prefersDark) applyTheme('dark'); else applyTheme('light'); }
-      toggleButton.addEventListener('click', toggleTheme);
+      function applyTheme(theme) { 
+        body.className = ''; 
+        body.classList.add('theme-' + theme); 
+        toggleButton.innerText = theme === 'dark' ? '☀️' : '🌙'; 
+        localStorage.setItem('theme', theme); 
+      }
+      
+      function toggleTheme() { 
+        const currentTheme = body.classList.contains('theme-dark') ? 'dark' : 'light'; 
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark'; 
+        applyTheme(newTheme); 
+      }
+      
+      function initTheme() { 
+        // Force Dark Theme initially for the Tech Vibe
+        const savedTheme = localStorage.getItem('theme'); 
+        if (savedTheme) applyTheme(savedTheme); 
+        else applyTheme('dark'); 
+      }
+      
+      if(toggleButton) toggleButton.addEventListener('click', toggleTheme);
       initTheme();
 
+      // Latency Simulator for Footer
+      setInterval(() => {
+        const latency = Math.floor(Math.random() * (45 - 15 + 1) + 15);
+        const latElem = document.getElementById('footer-latency');
+        if(latElem) latElem.innerText = latency + 'ms';
+      }, 3000);
+
+      // Metrics Logic
       async function fetchMetrics() {
         const lblTotalRequests = document.getElementById('lbl-total-requests');
         const lblTotalBytes = document.getElementById('lbl-total-bytes');
@@ -250,6 +231,7 @@ export const DashboardTemplate = (props: DashboardProps) => html`
           const data = await response.json();
           if (data.error) throw new Error(data.error);
 
+          // Animate Numbers
           lblTotalRequests.innerText = data.requests.toLocaleString();
           
           const bytes = data.bytes;
@@ -265,10 +247,12 @@ export const DashboardTemplate = (props: DashboardProps) => html`
           lblReads.innerText = data.dbReads.toLocaleString();
           lblWrites.innerText = data.dbWrites.toLocaleString();
 
+          // Bar Animation
           const maxVal = Math.max(data.dbReads, data.dbWrites, 100);
           document.getElementById('bar-reads').style.width = Math.min(100, (data.dbReads / maxVal) * 100) + "%";
           document.getElementById('bar-writes').style.width = Math.min(100, (data.dbWrites / maxVal) * 100) + "%";
 
+          // Country List Update
           listCountries.innerHTML = ''; 
           if(data.countries && data.countries.length > 0) {
               data.countries.forEach(c => {
@@ -276,20 +260,30 @@ export const DashboardTemplate = (props: DashboardProps) => html`
                   li.className = 'country-item';
                   const code = c.code || 'UNK';
                   const flagUrl = 'https://flagsapi.com/' + code + '/flat/32.png';
-                  li.innerHTML = \`<div style="display:flex; align-items:center; gap:12px;"><img src="\${flagUrl}" style="width:20px; height:20px; object-fit:contain;" onerror="this.style.display='none'"><span style="font-weight:500;">\${code}</span></div><span style="font-weight:700; color: var(--text-main); ">\${c.count.toLocaleString()}</span>\`;
+                  
+                  // Styled List Item with Flag
+                  li.innerHTML = \`
+                    <div class="flag-wrapper">
+                      <img src="\${flagUrl}" style="width:24px; height:24px; object-fit:contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" onerror="this.style.display=\'none\'">
+                      <span class="country-code">\${code}</span>
+                    </div>
+                    <span style="font-family:'JetBrains Mono', monospace; font-weight:700; color: var(--text-highlight);">
+                      \${c.count.toLocaleString()}
+                    </span>
+                  \`;
                   listCountries.appendChild(li);
               });
           } else {
-              listCountries.innerHTML = '<li class="country-item" style="justify-content:center; color: var(--text-muted);">No traffic data</li>';
+              listCountries.innerHTML = '<li class="country-item" style="justify-content:center; color: var(--text-muted); border:none;">No traffic data</li>';
           }
         } catch (e) {
           console.error('Error loading metrics', e);
-          const errElem = '<span style="color:var(--neg-change); font-size:0.8rem;">Offline</span>';
+          const errElem = '<span style="color: #ef4444; font-size:0.8rem;">OFFLINE</span>';
           lblTotalRequests.innerHTML = errElem;
         }
       }
       fetchMetrics();
-      setInterval(fetchMetrics, 60000);
+      setInterval(fetchMetrics, 30000); // 30s update
     </script>
   </body>
   </html>
