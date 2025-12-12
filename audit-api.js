@@ -4,9 +4,9 @@
 // -----------------------------------------------------------
 
 const CONFIG = {
-  ACCOUNT_ID: "5d91807e648c183cb7833caa06dbcbdb",
-  ZONE_ID:    "60681ad827e114d9e51add1f079dd5d2",
-  API_TOKEN:  "OIrQCNkgCUzx49pPc3VMCEOEO-F66SNHXI6hTDn8"
+  ACCOUNT_ID: "",
+  ZONE_ID:    "",
+  API_TOKEN:  ""
 };
 
 // --- CORREÇÃO DE TEMPO CRÍTICA ---
